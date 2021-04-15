@@ -6,9 +6,12 @@ const navBar = document.querySelector('.nav-bar');
 const tableName = document.querySelector('.header-text');
 const website = document.querySelector('.header-box');
 const table = document.querySelector('.querry-box');
+const searchBox = document.querySelector('.search');
 const tableHeader = document.querySelector('.header');
 const tableElements = document.querySelector('.grid');
 const icons = document.querySelector('.fa');
+const foodImg = document.querySelector('.small-imgs');
+const foodIngBox = document.querySelector('.itemGrid');
 
 const RES_PER_PAGE = 9;
 let data;
@@ -59,6 +62,7 @@ searchBtn.addEventListener('click', async function (e) {
     currentPage = 1;
     query.value = '';
     getPageData(1, data);
+    searchBox.classList.remove('hidden');
     table.classList.remove('hidden');
     if (!tableName) return;
     tableName.textContent = 'Searh Results';
@@ -81,13 +85,12 @@ const renderPageData = async function (pageRecipies) {
   clear(tableElements);
   pageRecipies.forEach(
     recipe => {
-      console.log(recipe);
       if (recipe.strMeal.length > 24) {
         recipe.strMeal = `${recipe.strMeal.slice(0, 21)}...`;
       }
       const markup = `
       <i class="item">
-      <img src="${recipe.strMealThumb}" class="small-imgs" />
+      <img src="${recipe.strMealThumb}" class="small-imgs" onclick="loadFoodIng(${recipe.idMeal})"/>
       <h6>${recipe.strMeal}</h6>
       </i>`;
       insertNewHTML(tableElements, markup);
@@ -131,3 +134,49 @@ window.addEventListener('click', function (e) {
   clear(tableHeader);
   insertNewHTML(tableHeader, renderButtons(currentPage, pages));
 });
+
+const loadFoodIng = async function (id) {
+  try {
+    const data = await apiCall(
+      `https://www.themealdb.com/api/json/v1/1/lookup.php?i=${id}`
+    );
+    renderFoodIng(data.meals[0]);
+  } catch (err) {
+    console.error(err);
+  }
+};
+const renderFoodIng = function (data) {
+  searchBox.classList.add('hidden');
+  foodIngBox.classList.remove('hidden');
+
+  const allIngredients = Object.keys(data) // Getting all Ingredients
+    .filter(param => param.includes('strIngredient') && data[param] !== '')
+    .map(str => data[str]);
+
+  const allQuantities = Object.keys(data) // Getting all Ingredient Quantities
+    .filter(param => param.includes('strMeasure') && data[param] !== '')
+    .map(str => data[str]);
+
+  const ingredientMarkup = allIngredients
+    .map((ing, i) => {
+      return `<i class="ingredient-item">${ing}</i>
+            <i class="ingredient-quantity">${allQuantities[i]}</i>`;
+    })
+    .join('');
+  console.log(ingredientMarkup);
+  const markup = `
+  <div class="green-filter">
+            <img
+              src="${data.strMealThumb}"
+              class="food-photo"
+            />
+          </div>
+          <h1 class="ingredient-text">Ingredients</h1>
+          <div class="grid ingredient-box">
+            ${ingredientMarkup}
+          </div>
+          <div class="center">
+            <button class="goto-recipe">Go to Page
+            </div>`;
+  insertNewHTML(foodIngBox, markup);
+};
