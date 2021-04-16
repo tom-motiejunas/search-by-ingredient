@@ -6,6 +6,7 @@ export const state = {
     query: '',
     results: [],
     page: 1,
+    resultsPerPage: 9,
   },
   bookmarks: [],
 };
@@ -15,28 +16,34 @@ export const apiCall = async function (url) {
     const response = await fetch(url);
     const data = await response.json();
     if (!response.ok) throw new Error(`${data.message} (${response.status})`);
-    return data;
+    state.search.results = data;
+
+    state.search.page = 1; // Resetting page count if we got new searches
   } catch (err) {
     console.error(err);
   }
 };
 
-export const getSearchResultsPage = async function (query) {
+export const loadSearchResults = async function (query) {
   try {
     return await apiCall(
       `https://www.themealdb.com/api/json/v1/1/filter.php?i=${query}`
     );
-    if (!tableName) return;
-    tableName.textContent = 'Searh Results';
   } catch (err) {
     console.error(err);
   }
 };
-
+export const getSearchResultsPage = function (page = '') {
+  // Finding what page to load;
+  if (!page) page = 1;
+  if (page === 'fa-arrow-right') page = ++state.search.page;
+  if (page === 'fa-arrow-left') page = --state.search.page;
+  return getPage(page, state.search.results.meals);
+};
 export const getPage = function (pageNum, arr, RES_PER_PAGE = 9) {
   const lowerLim = (pageNum - 1) * RES_PER_PAGE;
   const upperLim = pageNum * RES_PER_PAGE;
-  pages = Math.ceil(arr.length / RES_PER_PAGE);
+  const pages = Math.ceil(arr.length / RES_PER_PAGE);
   return arr.slice(lowerLim, upperLim);
 };
 

@@ -1,14 +1,8 @@
 import * as model from './model.js';
 import foodsView from './views/foodsView.js';
 import navView from './views/navView.js';
+import paginationView from './views/paginationView.js';
 import searchView from './views/searchView.js';
-
-const getPageData = function (pageNum, recipies) {
-  recipies = getPage(1, recipies);
-  clear(tableHeader);
-  insertNewHTML(tableHeader, renderButtonsFoodPage(pageNum, pages));
-  renderPageData(recipies);
-};
 
 const controlNavBar = function (e) {
   // Event delegation
@@ -17,35 +11,32 @@ const controlNavBar = function (e) {
   //tableName.textContent = e.target.textContent;
 };
 
-const controlSearch = function () {
+const controlSearch = async function () {
+  // 1) Getting search querry
   const query = searchView.getQuery();
 
-  document.querySelector('.querry-box').classList.remove('.hidden');
-  const data = model.getSearchResultsPage(query);
-  console.log(data);
+  // 2) Load Search Results
+  await model.loadSearchResults(query);
+
+  // 3) Render Results
+  foodsView.render(model.getSearchResultsPage());
+
+  // 4) Render Buttons
+  paginationView.render(model.state.search);
+  // console.log(model.state.search.results);
+};
+
+const controlPagination = function (goToPage) {
+  // 1) Render New Results
+  foodsView.render(model.getSearchResultsPage(goToPage));
+
+  // 2) Render New Pagination Buttons
+  paginationView.render(model.state.search);
 };
 
 const init = function () {
   navView.addHandlerRender(controlNavBar);
-  navView.addHandlerRenderSearch(controlSearch);
+  searchView.addHandlerSearch(controlSearch);
+  paginationView.addHandlerClick(controlPagination);
 };
 init();
-
-window.addEventListener('click', function (e) {
-  e.preventDefault();
-  if (!e.target.className.includes('fa')) return;
-  if (e.target.className.includes('fa-arrow-left')) {
-    currentPage--;
-  }
-  if (e.target.className.includes('fa-arrow-right')) {
-    currentPage++;
-  }
-  if (e.target.className.includes('fa-times')) {
-    table.classList.add('hidden');
-    currentPage = 1;
-    return;
-  }
-  getPageData(currentPage, data.meals);
-  clear(tableHeader);
-  insertNewHTML(tableHeader, renderButtonsFoodPage(currentPage, pages));
-});

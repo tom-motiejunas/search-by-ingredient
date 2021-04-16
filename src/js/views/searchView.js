@@ -1,6 +1,5 @@
 class SearchView {
   _parentEl = document.querySelector('.search-bar');
-
   getQuery() {
     const query = this._parentEl.querySelector('.input-field').value;
     this._clearInput();
