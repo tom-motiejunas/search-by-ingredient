@@ -1,0 +1,27 @@
+{
+  "name": "coffewebcup",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.html",
+  "scripts": {
+    "watch": "parcel watch index.html",
+    "start": "parcel index.html",
+    "build": "parcel build index.html --dist-dir ./dist"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/tom-motiejunas/coffeWebCup.git"
+  },
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/tom-motiejunas/coffeWebCup/issues"
+  },
+  "homepage": "https://github.com/tom-motiejunas/coffeWebCup#readme",
+  "dependencies": {
+    "core-js": "^3.10.1",
+    "parcel": "^2.0.0-beta.2",
+    "parcel-bundler": "^1.12.5",
+    "regenerator-runtime": "^0.13.7"
+  }
+}
