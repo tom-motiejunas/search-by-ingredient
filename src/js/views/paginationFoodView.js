@@ -21,10 +21,10 @@ class PaginationView extends View {
     const numPages = Math.ceil(
       this._data.results.meals.length / this._data.resultsPerPage
     );
-    const rendNextButton = function (curPage) {
+    const rendNextButton = function () {
       return `<i class="fa fa-arrow-right" aria-hidden="true"></i>`;
     };
-    const rendPrevButton = function (curPage) {
+    const rendPrevButton = function () {
       return `<i class="fa fa-arrow-left" aria-hidden="true"></i>`;
     };
     // Page 1, and there are other pages

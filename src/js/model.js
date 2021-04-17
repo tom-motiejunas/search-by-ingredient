@@ -8,17 +8,20 @@ export const state = {
     page: 1,
     resultsPerPage: 9,
   },
+  ingredient: {
+    id: '',
+    results: [],
+    page: 1,
+    resultsPerPage: 6,
+  },
   bookmarks: [],
 };
 
 export const apiCall = async function (url) {
   try {
     const response = await fetch(url);
-    const data = await response.json();
+    return await response.json();
     if (!response.ok) throw new Error(`${data.message} (${response.status})`);
-    state.search.results = data;
-
-    state.search.page = 1; // Resetting page count if we got new searches
   } catch (err) {
     console.error(err);
   }
@@ -26,19 +29,37 @@ export const apiCall = async function (url) {
 
 export const loadSearchResults = async function (query) {
   try {
-    return await apiCall(
+    const data = await apiCall(
       `https://www.themealdb.com/api/json/v1/1/filter.php?i=${query}`
     );
+    state.search.results = data;
+
+    state.search.page = 1; // Resetting page count if we got new searches
   } catch (err) {
     console.error(err);
   }
 };
-export const getSearchResultsPage = function (page = '') {
+export const getNewPageNumber = function (str) {
+  if (str === 'fa-arrow-right') return 1;
+  if (str === 'fa-arrow-left') return -1;
+  else return 0;
+};
+
+export const getSearchResultsPage = function (
+  page = '',
+  arr = state.search.results.meals,
+  RES_PER_PAGE = 9
+) {
   // Finding what page to load;
   if (!page) page = 1;
-  if (page === 'fa-arrow-right') page = ++state.search.page;
-  if (page === 'fa-arrow-left') page = --state.search.page;
-  return getPage(page, state.search.results.meals);
+  if (arr === state.search.results.meals) {
+    state.search.page += getNewPageNumber(page);
+    page = state.search.page;
+  } else {
+    state.recipe.page += getNewPageNumber(page);
+    page = state.ingredient.page;
+  }
+  return getPage(page, arr, RES_PER_PAGE);
 };
 export const getPage = function (pageNum, arr, RES_PER_PAGE = 9) {
   const lowerLim = (pageNum - 1) * RES_PER_PAGE;
@@ -52,7 +73,9 @@ export const loadFoodIng = async function (id) {
     const data = await apiCall(
       `https://www.themealdb.com/api/json/v1/1/lookup.php?i=${id}`
     );
-    renderFoodIng(data.meals[0]);
+    state.ingredient.page = 1;
+    state.ingredient.id = id;
+    state.ingredient.results = data.meals[0];
   } catch (err) {
     console.error(err);
   }
@@ -85,17 +108,9 @@ export const getButtonIngPage = function (pageToSend, pages) {
   if (pageToSend === 1 && pages > 1) return rightArrowBtn;
 };
 
-export const getIngAndQuant = function () {
-  const allIngredients = Object.keys(data) // Getting all Ingredients
-    .filter(param => param.includes('strIngredient') && data[param] !== '')
-    .map(str => data[str]);
-
-  const allQuantities = Object.keys(data) // Getting all Ingredient Quantities
-    .filter(param => param.includes('strMeasure') && data[param] !== '')
-    .map(str => data[str]);
-
-  return allIngredients.map((ing, i) => {
-    `<i class="ingredient-item">${ing}</i>
-             <i class="ingredient-quantity">${allQuantities[i]}</i>`;
-  });
+export const getKeysArr = function (ingObj, str) {
+  const arr = Object.keys(ingObj).filter(
+    ing => ing.includes(str) && ingObj[ing]
+  );
+  return arr.map(str => ingObj[str]);
 };

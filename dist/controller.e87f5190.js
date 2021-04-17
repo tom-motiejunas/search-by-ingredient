@@ -874,7 +874,7 @@ try {
 Object.defineProperty(exports, "__esModule", {
   value: true
 });
-exports.getIngAndQuant = exports.getButtonIngPage = exports.getButtonsFoodPage = exports.loadFoodIng = exports.getPage = exports.getSearchResultsPage = exports.loadSearchResults = exports.apiCall = exports.state = void 0;
+exports.getKeysArr = exports.getButtonIngPage = exports.getButtonsFoodPage = exports.loadFoodIng = exports.getPage = exports.getSearchResultsPage = exports.getNewPageNumber = exports.loadSearchResults = exports.apiCall = exports.state = void 0;
 
 var _regeneratorRuntime = _interopRequireDefault(require("regenerator-runtime"));
 
@@ -892,14 +892,19 @@ var state = {
     page: 1,
     resultsPerPage: 9
   },
+  ingredient: {
+    id: '',
+    results: [],
+    page: 1,
+    resultsPerPage: 6
+  },
   bookmarks: []
 };
 exports.state = state;
 
 var apiCall = /*#__PURE__*/function () {
   var _ref = _asyncToGenerator( /*#__PURE__*/_regeneratorRuntime.default.mark(function _callee(url) {
-    var response, _data;
-
+    var response;
     return _regeneratorRuntime.default.wrap(function _callee$(_context) {
       while (1) {
         switch (_context.prev = _context.next) {
@@ -914,33 +919,23 @@ var apiCall = /*#__PURE__*/function () {
             return response.json();
 
           case 6:
-            _data = _context.sent;
-
-            if (response.ok) {
-              _context.next = 9;
-              break;
-            }
-
-            throw new Error("".concat(_data.message, " (").concat(response.status, ")"));
+            return _context.abrupt("return", _context.sent);
 
           case 9:
-            state.search.results = _data;
-            state.search.page = 1; // Resetting page count if we got new searches
-
-            _context.next = 16;
+            _context.next = 14;
             break;
 
-          case 13:
-            _context.prev = 13;
+          case 11:
+            _context.prev = 11;
             _context.t0 = _context["catch"](0);
             console.error(_context.t0);
 
-          case 16:
+          case 14:
           case "end":
             return _context.stop();
         }
       }
-    }, _callee, null, [[0, 13]]);
+    }, _callee, null, [[0, 11]]);
   }));
 
   return function apiCall(_x) {
@@ -952,6 +947,8 @@ exports.apiCall = apiCall;
 
 var loadSearchResults = /*#__PURE__*/function () {
   var _ref2 = _asyncToGenerator( /*#__PURE__*/_regeneratorRuntime.default.mark(function _callee2(query) {
+    var _data;
+
     return _regeneratorRuntime.default.wrap(function _callee2$(_context2) {
       while (1) {
         switch (_context2.prev = _context2.next) {
@@ -961,19 +958,24 @@ var loadSearchResults = /*#__PURE__*/function () {
             return apiCall("https://www.themealdb.com/api/json/v1/1/filter.php?i=".concat(query));
 
           case 3:
-            return _context2.abrupt("return", _context2.sent);
+            _data = _context2.sent;
+            state.search.results = _data;
+            state.search.page = 1; // Resetting page count if we got new searches
 
-          case 6:
-            _context2.prev = 6;
+            _context2.next = 11;
+            break;
+
+          case 8:
+            _context2.prev = 8;
             _context2.t0 = _context2["catch"](0);
             console.error(_context2.t0);
 
-          case 9:
+          case 11:
           case "end":
             return _context2.stop();
         }
       }
-    }, _callee2, null, [[0, 6]]);
+    }, _callee2, null, [[0, 8]]);
   }));
 
   return function loadSearchResults(_x2) {
@@ -983,13 +985,29 @@ var loadSearchResults = /*#__PURE__*/function () {
 
 exports.loadSearchResults = loadSearchResults;
 
+var getNewPageNumber = function getNewPageNumber(str) {
+  if (str === 'fa-arrow-right') return 1;
+  if (str === 'fa-arrow-left') return -1;else return 0;
+};
+
+exports.getNewPageNumber = getNewPageNumber;
+
 var getSearchResultsPage = function getSearchResultsPage() {
   var page = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : '';
+  var arr = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : state.search.results.meals;
+  var RES_PER_PAGE = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : 9;
   // Finding what page to load;
   if (!page) page = 1;
-  if (page === 'fa-arrow-right') page = ++state.search.page;
-  if (page === 'fa-arrow-left') page = --state.search.page;
-  return getPage(page, state.search.results.meals);
+
+  if (arr === state.search.results.meals) {
+    state.search.page += getNewPageNumber(page);
+    page = state.search.page;
+  } else {
+    state.recipe.page += getNewPageNumber(page);
+    page = state.ingredient.page;
+  }
+
+  return getPage(page, arr, RES_PER_PAGE);
 };
 
 exports.getSearchResultsPage = getSearchResultsPage;
@@ -1018,21 +1036,23 @@ var loadFoodIng = /*#__PURE__*/function () {
 
           case 3:
             _data2 = _context3.sent;
-            renderFoodIng(_data2.meals[0]);
-            _context3.next = 10;
+            state.ingredient.page = 1;
+            state.ingredient.id = id;
+            state.ingredient.results = _data2.meals[0];
+            _context3.next = 12;
             break;
 
-          case 7:
-            _context3.prev = 7;
+          case 9:
+            _context3.prev = 9;
             _context3.t0 = _context3["catch"](0);
             console.error(_context3.t0);
 
-          case 10:
+          case 12:
           case "end":
             return _context3.stop();
         }
       }
-    }, _callee3, null, [[0, 7]]);
+    }, _callee3, null, [[0, 9]]);
   }));
 
   return function loadFoodIng(_x3) {
@@ -1075,25 +1095,16 @@ var getButtonIngPage = function getButtonIngPage(pageToSend, pages) {
 
 exports.getButtonIngPage = getButtonIngPage;
 
-var getIngAndQuant = function getIngAndQuant() {
-  var allIngredients = Object.keys(data) // Getting all Ingredients
-  .filter(function (param) {
-    return param.includes('strIngredient') && data[param] !== '';
-  }).map(function (str) {
-    return data[str];
+var getKeysArr = function getKeysArr(ingObj, str) {
+  var arr = Object.keys(ingObj).filter(function (ing) {
+    return ing.includes(str) && ingObj[ing];
   });
-  var allQuantities = Object.keys(data) // Getting all Ingredient Quantities
-  .filter(function (param) {
-    return param.includes('strMeasure') && data[param] !== '';
-  }).map(function (str) {
-    return data[str];
-  });
-  return allIngredients.map(function (ing, i) {
-    "<i class=\"ingredient-item\">".concat(ing, "</i>\n             <i class=\"ingredient-quantity\">").concat(allQuantities[i], "</i>");
+  return arr.map(function (str) {
+    return ingObj[str];
   });
 };
 
-exports.getIngAndQuant = getIngAndQuant;
+exports.getKeysArr = getKeysArr;
 },{"regenerator-runtime":"node_modules/regenerator-runtime/runtime.js"}],"src/js/views/View.js":[function(require,module,exports) {
 "use strict";
 
@@ -1126,14 +1137,14 @@ var View = /*#__PURE__*/function () {
     value: function render(data) {
       var _render = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : true;
 
+      var isClear = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : true;
       if (!data || Array.isArray(data) && data.length === 0) return this.renderError();
       this._data = data;
 
       var markup = this._generateMarkup();
 
       if (!_render) return markup;
-
-      this._clear();
+      if (isClear) this._clear();
 
       this._parentElement.insertAdjacentHTML('afterbegin', markup);
     }
@@ -1211,27 +1222,39 @@ var foodsView = /*#__PURE__*/function (_View) {
   }
 
   _createClass(foodsView, [{
-    key: "addHandlerArrow",
-    value: function addHandlerArrow(handler) {
-      this._UIbtn.addEventListener('click', handler);
+    key: "addHandlerClick",
+    value: // addHandlerArrow(handler) {
+    //   this._UIbtn.addEventListener('click', handler);
+    // }
+    function addHandlerClick(handler) {
+      this._parentElement.addEventListener('click', function (e) {
+        if (!e.target.className === 'small-imgs') return;
+        var foodID = e.target.closest('.item').id;
+        handler(foodID);
+      });
     }
   }, {
-    key: "toggleWindow",
-    value: function toggleWindow() {
+    key: "openWindow",
+    value: function openWindow() {
       this._overlay.classList.remove('hidden');
 
       this._content.classList.remove('hidden');
     }
   }, {
+    key: "hideWindow",
+    value: function hideWindow() {
+      this._content.classList.add('hidden');
+    }
+  }, {
     key: "_generateMarkup",
     value: function _generateMarkup() {
-      this.toggleWindow();
+      this.openWindow();
       return this._data.map(function (recipe) {
         if (recipe.strMeal.length > 24) {
           recipe.strMeal = "".concat(recipe.strMeal.slice(0, 21), "...");
         }
 
-        return "\n        <i class=\"item\">\n        <img src=\"".concat(recipe.strMealThumb, "\" class=\"small-imgs\" onclick=\"loadFoodIng(").concat(recipe.idMeal, ")\"/>\n        <h6>").concat(recipe.strMeal, "</h6>\n        </i>");
+        return "\n        <i class=\"item\" id=\"".concat(recipe.idMeal, "\">\n        <img src=\"").concat(recipe.strMealThumb, "\" class=\"small-imgs\"/>\n        <h6>").concat(recipe.strMeal, "</h6>\n        </i>");
       }).join('');
     }
   }]);
@@ -1241,6 +1264,106 @@ var foodsView = /*#__PURE__*/function (_View) {
 
 var _default = new foodsView(); //insertNewHTML(tableElements, markup);
 
+
+exports.default = _default;
+},{"./View.js":"src/js/views/View.js"}],"src/js/views/ingredientView.js":[function(require,module,exports) {
+"use strict";
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+exports.default = void 0;
+
+var _View2 = _interopRequireDefault(require("./View.js"));
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+function _typeof(obj) { "@babel/helpers - typeof"; if (typeof Symbol === "function" && typeof Symbol.iterator === "symbol") { _typeof = function _typeof(obj) { return typeof obj; }; } else { _typeof = function _typeof(obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; }; } return _typeof(obj); }
+
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+function _defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } }
+
+function _createClass(Constructor, protoProps, staticProps) { if (protoProps) _defineProperties(Constructor.prototype, protoProps); if (staticProps) _defineProperties(Constructor, staticProps); return Constructor; }
+
+function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function"); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, writable: true, configurable: true } }); if (superClass) _setPrototypeOf(subClass, superClass); }
+
+function _setPrototypeOf(o, p) { _setPrototypeOf = Object.setPrototypeOf || function _setPrototypeOf(o, p) { o.__proto__ = p; return o; }; return _setPrototypeOf(o, p); }
+
+function _createSuper(Derived) { var hasNativeReflectConstruct = _isNativeReflectConstruct(); return function _createSuperInternal() { var Super = _getPrototypeOf(Derived), result; if (hasNativeReflectConstruct) { var NewTarget = _getPrototypeOf(this).constructor; result = Reflect.construct(Super, arguments, NewTarget); } else { result = Super.apply(this, arguments); } return _possibleConstructorReturn(this, result); }; }
+
+function _possibleConstructorReturn(self, call) { if (call && (_typeof(call) === "object" || typeof call === "function")) { return call; } return _assertThisInitialized(self); }
+
+function _assertThisInitialized(self) { if (self === void 0) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return self; }
+
+function _isNativeReflectConstruct() { if (typeof Reflect === "undefined" || !Reflect.construct) return false; if (Reflect.construct.sham) return false; if (typeof Proxy === "function") return true; try { Boolean.prototype.valueOf.call(Reflect.construct(Boolean, [], function () {})); return true; } catch (e) { return false; } }
+
+function _getPrototypeOf(o) { _getPrototypeOf = Object.setPrototypeOf ? Object.getPrototypeOf : function _getPrototypeOf(o) { return o.__proto__ || Object.getPrototypeOf(o); }; return _getPrototypeOf(o); }
+
+function _defineProperty(obj, key, value) { if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); } else { obj[key] = value; } return obj; }
+
+var foodsView = /*#__PURE__*/function (_View) {
+  _inherits(foodsView, _View);
+
+  var _super = _createSuper(foodsView);
+
+  function foodsView() {
+    var _this;
+
+    _classCallCheck(this, foodsView);
+
+    for (var _len = arguments.length, args = new Array(_len), _key = 0; _key < _len; _key++) {
+      args[_key] = arguments[_key];
+    }
+
+    _this = _super.call.apply(_super, [this].concat(args));
+
+    _defineProperty(_assertThisInitialized(_this), "_parentElement", document.querySelector('.itemGrid'));
+
+    _defineProperty(_assertThisInitialized(_this), "_errorMessage", 'We could not find any ingredient with that recipe');
+
+    _defineProperty(_assertThisInitialized(_this), "_content", document.querySelector('.search'));
+
+    _defineProperty(_assertThisInitialized(_this), "_message", '');
+
+    return _this;
+  }
+
+  _createClass(foodsView, [{
+    key: "hideWindow",
+    value: function hideWindow() {
+      this._content.classList.remove('hidden');
+
+      this._parentElement.classList.add('hidden');
+    }
+  }, {
+    key: "openWindow",
+    value: function openWindow() {
+      this._content.classList.add('hidden');
+
+      this._parentElement.classList.remove('hidden');
+    }
+  }, {
+    key: "_generateMarkup",
+    value: function _generateMarkup() {
+      var _this2 = this;
+
+      this.openWindow();
+
+      var ingredients = this._data.ingredients.map(function (ing, i) {
+        return "\n    <i class=\"ingredient-item\">".concat(ing, "</i>\n    <i class=\"ingredient-quantity\">").concat(_this2._data.quantities[i], "</i>");
+      }).join(''); // const pagedIngredientMarkup = getPage(1, ingredientMarkup, 6).join('');
+      // const buttons = renderButtonIngPage(2, 3);
+
+
+      return "<div class=\"green-filter\">\n                  <img\n                    src=\"".concat(this._data.strMealThumb, "\"\n                    class=\"food-photo\"\n                    />\n                </div>\n                <h1 class=\"ingredient-text\">Ingredients</h1>\n                <div class=\"grid ingredient-box\">\n                ").concat(ingredients, "\n                </div>\n                <div class=\"center\">\n                  <button class=\"goto-recipe\">Go to Page\n                  </div>");
+    }
+  }]);
+
+  return foodsView;
+}(_View2.default);
+
+var _default = new foodsView();
 
 exports.default = _default;
 },{"./View.js":"src/js/views/View.js"}],"src/js/views/navView.js":[function(require,module,exports) {
@@ -1324,7 +1447,7 @@ var navView = /*#__PURE__*/function (_View) {
 var _default = new navView();
 
 exports.default = _default;
-},{"./View.js":"src/js/views/View.js"}],"src/js/views/paginationView.js":[function(require,module,exports) {
+},{"./View.js":"src/js/views/View.js"}],"src/js/views/paginationFoodView.js":[function(require,module,exports) {
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -1397,11 +1520,11 @@ var PaginationView = /*#__PURE__*/function (_View) {
       var curPage = this._data.page;
       var numPages = Math.ceil(this._data.results.meals.length / this._data.resultsPerPage);
 
-      var rendNextButton = function rendNextButton(curPage) {
+      var rendNextButton = function rendNextButton() {
         return "<i class=\"fa fa-arrow-right\" aria-hidden=\"true\"></i>";
       };
 
-      var rendPrevButton = function rendPrevButton(curPage) {
+      var rendPrevButton = function rendPrevButton() {
         return "<i class=\"fa fa-arrow-left\" aria-hidden=\"true\"></i>";
       }; // Page 1, and there are other pages
 
@@ -1486,18 +1609,130 @@ var SearchView = /*#__PURE__*/function () {
 var _default = new SearchView();
 
 exports.default = _default;
-},{}],"src/js/controller.js":[function(require,module,exports) {
+},{}],"src/js/views/paginationIngredientView.js":[function(require,module,exports) {
+"use strict";
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+exports.default = void 0;
+
+var _View2 = _interopRequireDefault(require("./View.js"));
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+function _typeof(obj) { "@babel/helpers - typeof"; if (typeof Symbol === "function" && typeof Symbol.iterator === "symbol") { _typeof = function _typeof(obj) { return typeof obj; }; } else { _typeof = function _typeof(obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; }; } return _typeof(obj); }
+
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+function _defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } }
+
+function _createClass(Constructor, protoProps, staticProps) { if (protoProps) _defineProperties(Constructor.prototype, protoProps); if (staticProps) _defineProperties(Constructor, staticProps); return Constructor; }
+
+function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function"); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, writable: true, configurable: true } }); if (superClass) _setPrototypeOf(subClass, superClass); }
+
+function _setPrototypeOf(o, p) { _setPrototypeOf = Object.setPrototypeOf || function _setPrototypeOf(o, p) { o.__proto__ = p; return o; }; return _setPrototypeOf(o, p); }
+
+function _createSuper(Derived) { var hasNativeReflectConstruct = _isNativeReflectConstruct(); return function _createSuperInternal() { var Super = _getPrototypeOf(Derived), result; if (hasNativeReflectConstruct) { var NewTarget = _getPrototypeOf(this).constructor; result = Reflect.construct(Super, arguments, NewTarget); } else { result = Super.apply(this, arguments); } return _possibleConstructorReturn(this, result); }; }
+
+function _possibleConstructorReturn(self, call) { if (call && (_typeof(call) === "object" || typeof call === "function")) { return call; } return _assertThisInitialized(self); }
+
+function _assertThisInitialized(self) { if (self === void 0) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return self; }
+
+function _isNativeReflectConstruct() { if (typeof Reflect === "undefined" || !Reflect.construct) return false; if (Reflect.construct.sham) return false; if (typeof Proxy === "function") return true; try { Boolean.prototype.valueOf.call(Reflect.construct(Boolean, [], function () {})); return true; } catch (e) { return false; } }
+
+function _getPrototypeOf(o) { _getPrototypeOf = Object.setPrototypeOf ? Object.getPrototypeOf : function _getPrototypeOf(o) { return o.__proto__ || Object.getPrototypeOf(o); }; return _getPrototypeOf(o); }
+
+function _defineProperty(obj, key, value) { if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); } else { obj[key] = value; } return obj; }
+
+var PaginationIngView = /*#__PURE__*/function (_View) {
+  _inherits(PaginationIngView, _View);
+
+  var _super = _createSuper(PaginationIngView);
+
+  function PaginationIngView() {
+    var _this;
+
+    _classCallCheck(this, PaginationIngView);
+
+    for (var _len = arguments.length, args = new Array(_len), _key = 0; _key < _len; _key++) {
+      args[_key] = arguments[_key];
+    }
+
+    _this = _super.call.apply(_super, [this].concat(args));
+
+    _defineProperty(_assertThisInitialized(_this), "_parentElement", document.querySelector('.itemGrid'));
+
+    return _this;
+  }
+
+  _createClass(PaginationIngView, [{
+    key: "addHandlerClick",
+    value: function addHandlerClick(handler) {
+      this._parentElement.addEventListener('click', function (e) {
+        var btn = e.target.closest('.fa');
+        if (!btn) return;
+        handler(btn.classList[1]);
+      });
+    }
+  }, {
+    key: "_generateMarkup",
+    value: function _generateMarkup() {
+      var curPage = this._data.page;
+      var numPages = Math.ceil(this._data.allIngredients.length / this._data.resultsPerPage);
+
+      var rendNextButton = function rendNextButton() {
+        return "<i class=\"fa fa-arrow-right\" aria-hidden=\"true\"></i>";
+      };
+
+      var rendPrevButton = function rendPrevButton() {
+        return "<i class=\"fa fa-arrow-left\" aria-hidden=\"true\"></i>";
+      }; // Page 1, and there are other pages
+
+
+      if (curPage === 1 && numPages > 1) {
+        return rendNextButton();
+      } // Page 1, and there are no other pages
+
+
+      if (curPage === 1 && numPages === 1) {
+        return '';
+      } // Last page
+
+
+      if (curPage === numPages) {
+        return rendPrevButton();
+      } // Other page
+
+
+      if (curPage < numPages) {
+        return rendNextButton() + rendPrevButton();
+      }
+    }
+  }]);
+
+  return PaginationIngView;
+}(_View2.default);
+
+var _default = new PaginationIngView();
+
+exports.default = _default;
+},{"./View.js":"src/js/views/View.js"}],"src/js/controller.js":[function(require,module,exports) {
 "use strict";
 
 var model = _interopRequireWildcard(require("./model.js"));
 
 var _foodsView = _interopRequireDefault(require("./views/foodsView.js"));
 
+var _ingredientView = _interopRequireDefault(require("./views/ingredientView.js"));
+
 var _navView = _interopRequireDefault(require("./views/navView.js"));
 
-var _paginationView = _interopRequireDefault(require("./views/paginationView.js"));
+var _paginationFoodView = _interopRequireDefault(require("./views/paginationFoodView.js"));
 
 var _searchView = _interopRequireDefault(require("./views/searchView.js"));
+
+var _paginationIngredientView = _interopRequireDefault(require("./views/paginationIngredientView.js"));
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
@@ -1530,14 +1765,17 @@ var controlSearch = /*#__PURE__*/function () {
             return model.loadSearchResults(query);
 
           case 3:
-            // 3) Render Results
-            _foodsView.default.render(model.getSearchResultsPage()); // 4) Render Buttons
+            // 3) Hide Ingredient View (if there is)
+            _ingredientView.default.hideWindow(); // 4) Render Results
 
 
-            _paginationView.default.render(model.state.search); // console.log(model.state.search.results);
+            _foodsView.default.render(model.getSearchResultsPage()); // 5) Render Buttons
 
 
-          case 5:
+            _paginationFoodView.default.render(model.state.search); // console.log(model.state.search.results);
+
+
+          case 6:
           case "end":
             return _context.stop();
         }
@@ -1550,12 +1788,72 @@ var controlSearch = /*#__PURE__*/function () {
   };
 }();
 
-var controlPagination = function controlPagination(goToPage) {
+var controlFoodPagination = function controlFoodPagination(goToPage) {
   // 1) Render New Results
   _foodsView.default.render(model.getSearchResultsPage(goToPage)); // 2) Render New Pagination Buttons
 
 
-  _paginationView.default.render(model.state.search);
+  _paginationFoodView.default.render(model.state.search);
+};
+
+var makeIngObject = function makeIngObject(goToPage) {
+  return {
+    // Food image
+    strMealThumb: model.state.ingredient.results.strMealThumb,
+    // Food ingredient (only 6 per page)
+    ingredients: model.getSearchResultsPage(goToPage, model.getKeysArr(model.state.ingredient.results, 'strIngredient'), model.state.ingredient.resultsPerPage),
+    // Food Ingredient Quantities (only 6 per page)
+    quantities: model.getSearchResultsPage(goToPage, model.getKeysArr(model.state.ingredient.results, 'strMeasure'), model.state.ingredient.resultsPerPage),
+    page: model.state.ingredient.page,
+    resultsPerPage: model.state.ingredient.resultsPerPage,
+    allIngredients: model.getKeysArr(model.state.ingredient.results, 'strIngredient')
+  };
+};
+
+var controlImages = /*#__PURE__*/function () {
+  var _ref2 = _asyncToGenerator( /*#__PURE__*/regeneratorRuntime.mark(function _callee2(foodID) {
+    var objToRender;
+    return regeneratorRuntime.wrap(function _callee2$(_context2) {
+      while (1) {
+        switch (_context2.prev = _context2.next) {
+          case 0:
+            _context2.next = 2;
+            return model.loadFoodIng(foodID);
+
+          case 2:
+            // 2) Hide foodsView
+            _foodsView.default.hideWindow(); // 3) Show Ingredient View
+            // Making Object to send to render
+
+
+            objToRender = makeIngObject(1);
+
+            _ingredientView.default.render(objToRender); // 4) Add Pagination buttons
+
+
+            _paginationIngredientView.default.render(objToRender, true, false);
+
+          case 6:
+          case "end":
+            return _context2.stop();
+        }
+      }
+    }, _callee2);
+  }));
+
+  return function controlImages(_x) {
+    return _ref2.apply(this, arguments);
+  };
+}();
+
+var controlIngPagination = function controlIngPagination(goToPage) {
+  goToPage = model.state.ingredient.page + model.getNewPageNumber(goToPage);
+  model.state.ingredient.page = goToPage;
+  var objToRender = makeIngObject(2);
+
+  _ingredientView.default.render(objToRender);
+
+  _paginationIngredientView.default.render(objToRender, true, false);
 };
 
 var init = function init() {
@@ -1563,11 +1861,15 @@ var init = function init() {
 
   _searchView.default.addHandlerSearch(controlSearch);
 
-  _paginationView.default.addHandlerClick(controlPagination);
+  _paginationFoodView.default.addHandlerClick(controlFoodPagination);
+
+  _foodsView.default.addHandlerClick(controlImages);
+
+  _paginationIngredientView.default.addHandlerClick(controlIngPagination);
 };
 
 init();
-},{"./model.js":"src/js/model.js","./views/foodsView.js":"src/js/views/foodsView.js","./views/navView.js":"src/js/views/navView.js","./views/paginationView.js":"src/js/views/paginationView.js","./views/searchView.js":"src/js/views/searchView.js"}],"node_modules/parcel-bundler/src/builtins/hmr-runtime.js":[function(require,module,exports) {
+},{"./model.js":"src/js/model.js","./views/foodsView.js":"src/js/views/foodsView.js","./views/ingredientView.js":"src/js/views/ingredientView.js","./views/navView.js":"src/js/views/navView.js","./views/paginationFoodView.js":"src/js/views/paginationFoodView.js","./views/searchView.js":"src/js/views/searchView.js","./views/paginationIngredientView.js":"src/js/views/paginationIngredientView.js"}],"node_modules/parcel-bundler/src/builtins/hmr-runtime.js":[function(require,module,exports) {
 var global = arguments[3];
 var OVERLAY_ID = '__parcel__error__overlay__';
 var OldModule = module.bundle.Module;
@@ -1595,7 +1897,7 @@ var parent = module.bundle.parent;
 if ((!parent || !parent.isParcelRequire) && typeof WebSocket !== 'undefined') {
   var hostname = "" || location.hostname;
   var protocol = location.protocol === 'https:' ? 'wss' : 'ws';
-  var ws = new WebSocket(protocol + '://' + hostname + ':' + "54894" + '/');
+  var ws = new WebSocket(protocol + '://' + hostname + ':' + "50075" + '/');
 
   ws.onmessage = function (event) {
     checkedAssets = {};
