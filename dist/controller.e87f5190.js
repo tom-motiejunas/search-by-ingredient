@@ -874,7 +874,7 @@ try {
 Object.defineProperty(exports, "__esModule", {
   value: true
 });
-exports.getKeysArr = exports.getButtonIngPage = exports.getButtonsFoodPage = exports.loadFoodIng = exports.getPage = exports.getSearchResultsPage = exports.getNewPageNumber = exports.loadSearchResults = exports.apiCall = exports.state = void 0;
+exports.getKeysArr = exports.getButtonIngPage = exports.getButtonsFoodPage = exports.loadCategorySearch = exports.loadLucky = exports.loadCategories = exports.loadFoodIng = exports.getPage = exports.getSearchResultsPage = exports.getNewPageNumber = exports.loadSearchResults = exports.apiCall = exports.state = void 0;
 
 var _regeneratorRuntime = _interopRequireDefault(require("regenerator-runtime"));
 
@@ -890,7 +890,8 @@ var state = {
     query: '',
     results: [],
     page: 1,
-    resultsPerPage: 9
+    resultsPerPage: 9,
+    context: ''
   },
   ingredient: {
     id: '',
@@ -962,20 +963,22 @@ var loadSearchResults = /*#__PURE__*/function () {
             state.search.results = _data;
             state.search.page = 1; // Resetting page count if we got new searches
 
-            _context2.next = 11;
+            state.search.context = 'food'; // Changing context
+
+            _context2.next = 12;
             break;
 
-          case 8:
-            _context2.prev = 8;
+          case 9:
+            _context2.prev = 9;
             _context2.t0 = _context2["catch"](0);
             console.error(_context2.t0);
 
-          case 11:
+          case 12:
           case "end":
             return _context2.stop();
         }
       }
-    }, _callee2, null, [[0, 8]]);
+    }, _callee2, null, [[0, 9]]);
   }));
 
   return function loadSearchResults(_x2) {
@@ -999,7 +1002,7 @@ var getSearchResultsPage = function getSearchResultsPage() {
   // Finding what page to load;
   if (!page) page = 1;
 
-  if (arr === state.search.results.meals) {
+  if (arr === state.search.results.meals || arr === state.search.results) {
     state.search.page += getNewPageNumber(page);
     page = state.search.page;
   } else {
@@ -1016,7 +1019,6 @@ var getPage = function getPage(pageNum, arr) {
   var RES_PER_PAGE = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : 9;
   var lowerLim = (pageNum - 1) * RES_PER_PAGE;
   var upperLim = pageNum * RES_PER_PAGE;
-  var pages = Math.ceil(arr.length / RES_PER_PAGE);
   return arr.slice(lowerLim, upperLim);
 };
 
@@ -1058,10 +1060,127 @@ var loadFoodIng = /*#__PURE__*/function () {
   return function loadFoodIng(_x3) {
     return _ref3.apply(this, arguments);
   };
+}();
+
+exports.loadFoodIng = loadFoodIng;
+
+var loadCategories = /*#__PURE__*/function () {
+  var _ref4 = _asyncToGenerator( /*#__PURE__*/_regeneratorRuntime.default.mark(function _callee4() {
+    var _data3;
+
+    return _regeneratorRuntime.default.wrap(function _callee4$(_context4) {
+      while (1) {
+        switch (_context4.prev = _context4.next) {
+          case 0:
+            _context4.prev = 0;
+            _context4.next = 3;
+            return apiCall('https://www.themealdb.com/api/json/v1/1/categories.php');
+
+          case 3:
+            _data3 = _context4.sent;
+            state.search.results = _data3.categories;
+            state.search.page = 1; // Resetting page count if we got new searches
+
+            state.search.context = 'categ'; // Changing context
+
+            _context4.next = 12;
+            break;
+
+          case 9:
+            _context4.prev = 9;
+            _context4.t0 = _context4["catch"](0);
+            console.error(_context4.t0);
+
+          case 12:
+          case "end":
+            return _context4.stop();
+        }
+      }
+    }, _callee4, null, [[0, 9]]);
+  }));
+
+  return function loadCategories() {
+    return _ref4.apply(this, arguments);
+  };
+}();
+
+exports.loadCategories = loadCategories;
+
+var loadLucky = /*#__PURE__*/function () {
+  var _ref5 = _asyncToGenerator( /*#__PURE__*/_regeneratorRuntime.default.mark(function _callee5() {
+    return _regeneratorRuntime.default.wrap(function _callee5$(_context5) {
+      while (1) {
+        switch (_context5.prev = _context5.next) {
+          case 0:
+            _context5.prev = 0;
+            _context5.next = 3;
+            return apiCall('https://www.themealdb.com/api/json/v1/1/random.php');
+
+          case 3:
+            return _context5.abrupt("return", _context5.sent);
+
+          case 6:
+            _context5.prev = 6;
+            _context5.t0 = _context5["catch"](0);
+            console.error(_context5.t0);
+
+          case 9:
+          case "end":
+            return _context5.stop();
+        }
+      }
+    }, _callee5, null, [[0, 6]]);
+  }));
+
+  return function loadLucky() {
+    return _ref5.apply(this, arguments);
+  };
+}();
+
+exports.loadLucky = loadLucky;
+
+var loadCategorySearch = /*#__PURE__*/function () {
+  var _ref6 = _asyncToGenerator( /*#__PURE__*/_regeneratorRuntime.default.mark(function _callee6(category) {
+    var _data4;
+
+    return _regeneratorRuntime.default.wrap(function _callee6$(_context6) {
+      while (1) {
+        switch (_context6.prev = _context6.next) {
+          case 0:
+            _context6.prev = 0;
+            _context6.next = 3;
+            return apiCall("https://www.themealdb.com/api/json/v1/1/filter.php?c=".concat(category));
+
+          case 3:
+            _data4 = _context6.sent;
+            state.search.results = _data4;
+            state.search.page = 1; // Resetting page count if we got new searches
+
+            state.search.context = 'food'; // Changing context
+
+            _context6.next = 12;
+            break;
+
+          case 9:
+            _context6.prev = 9;
+            _context6.t0 = _context6["catch"](0);
+            console.error(_context6.t0);
+
+          case 12:
+          case "end":
+            return _context6.stop();
+        }
+      }
+    }, _callee6, null, [[0, 9]]);
+  }));
+
+  return function loadCategorySearch(_x4) {
+    return _ref6.apply(this, arguments);
+  };
 }(); // For button in search tab
 
 
-exports.loadFoodIng = loadFoodIng;
+exports.loadCategorySearch = loadCategorySearch;
 
 var getButtonsFoodPage = function getButtonsFoodPage(pageToSend, pages) {
   // There is only 1 page
@@ -1228,7 +1347,7 @@ var foodsView = /*#__PURE__*/function (_View) {
     // }
     function addHandlerClick(handler) {
       this._parentElement.addEventListener('click', function (e) {
-        if (!e.target.className === 'small-imgs') return;
+        if (!(e.target.className === 'small-imgs food')) return;
         var foodID = e.target.closest('.item').id;
         handler(foodID);
       });
@@ -1254,7 +1373,7 @@ var foodsView = /*#__PURE__*/function (_View) {
           recipe.strMeal = "".concat(recipe.strMeal.slice(0, 21), "...");
         }
 
-        return "\n        <i class=\"item\" id=\"".concat(recipe.idMeal, "\">\n        <img src=\"").concat(recipe.strMealThumb, "\" class=\"small-imgs\"/>\n        <h6>").concat(recipe.strMeal, "</h6>\n        </i>");
+        return "\n        <i class=\"item\" id=\"".concat(recipe.idMeal, "\">\n        <img src=\"").concat(recipe.strMealThumb, "\" class=\"small-imgs food\"/>\n        <h6>").concat(recipe.strMeal, "</h6>\n        </i>");
       }).join('');
     }
   }]);
@@ -1352,9 +1471,7 @@ var foodsView = /*#__PURE__*/function (_View) {
 
       var ingredients = this._data.ingredients.map(function (ing, i) {
         return "\n    <i class=\"ingredient-item\">".concat(ing, "</i>\n    <i class=\"ingredient-quantity\">").concat(_this2._data.quantities[i], "</i>");
-      }).join(''); // const pagedIngredientMarkup = getPage(1, ingredientMarkup, 6).join('');
-      // const buttons = renderButtonIngPage(2, 3);
-
+      }).join('');
 
       return "<div class=\"green-filter\">\n                  <img\n                    src=\"".concat(this._data.strMealThumb, "\"\n                    class=\"food-photo\"\n                    />\n                </div>\n                <h1 class=\"ingredient-text\">Ingredients</h1>\n                <div class=\"grid ingredient-box\">\n                ").concat(ingredients, "\n                </div>\n                <div class=\"center\">\n                  <button class=\"goto-recipe\">Go to Page\n                  </div>");
     }
@@ -1420,9 +1537,7 @@ var navView = /*#__PURE__*/function (_View) {
 
     _defineProperty(_assertThisInitialized(_this), "_parentElement", document.querySelector('.nav-bar'));
 
-    _defineProperty(_assertThisInitialized(_this), "_searchBtn", document.querySelector('.search-text'));
-
-    _defineProperty(_assertThisInitialized(_this), "_errorMessage", 'We could not find any recipies with that ingredient');
+    _defineProperty(_assertThisInitialized(_this), "_errorMessage", 'We could not find any categories');
 
     _defineProperty(_assertThisInitialized(_this), "_message", '');
 
@@ -1430,14 +1545,30 @@ var navView = /*#__PURE__*/function (_View) {
   }
 
   _createClass(navView, [{
-    key: "addHandlerRender",
-    value: function addHandlerRender(handler) {
-      this._parentElement.addEventListener('click', handler);
+    key: "addHandlerClick",
+    value: // addHandlerArrow(handler) {
+    //   this._UIbtn.addEventListener('click', handler);
+    // }
+    function addHandlerClick(handler) {
+      this._parentElement.addEventListener('click', function (e) {
+        if (!e.target.className === 'small-imgs') return;
+        if (e.target.className.includes('categ')) handler('categ');
+        if (e.target.className.includes('luck')) handler('luck');
+        if (e.target.className.includes('bookmark')) handler('bookmark');
+        if (e.target.className.includes('about')) handler('about');
+      });
     }
   }, {
-    key: "addHandlerRenderSearch",
-    value: function addHandlerRenderSearch(handler) {
-      this._searchBtn.addEventListener('click', handler);
+    key: "_generateMarkup",
+    value: function _generateMarkup() {
+      this.openWindow();
+      return this._data.map(function (recipe) {
+        if (recipe.strMeal.length > 24) {
+          recipe.strMeal = "".concat(recipe.strMeal.slice(0, 21), "...");
+        }
+
+        return "\n        <i class=\"item\" id=\"".concat(recipe.idMeal, "\">\n        <img src=\"").concat(recipe.strMealThumb, "\" class=\"small-imgs\"/>\n        <h6>").concat(recipe.strMeal, "</h6>\n        </i>");
+      }).join('');
     }
   }]);
 
@@ -1447,7 +1578,7 @@ var navView = /*#__PURE__*/function (_View) {
 var _default = new navView();
 
 exports.default = _default;
-},{"./View.js":"src/js/views/View.js"}],"src/js/views/paginationFoodView.js":[function(require,module,exports) {
+},{"./View.js":"src/js/views/View.js"}],"src/js/views/pagination/paginationFoodView.js":[function(require,module,exports) {
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -1455,7 +1586,7 @@ Object.defineProperty(exports, "__esModule", {
 });
 exports.default = void 0;
 
-var _View2 = _interopRequireDefault(require("./View.js"));
+var _View2 = _interopRequireDefault(require("../View.js"));
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
@@ -1516,9 +1647,19 @@ var PaginationView = /*#__PURE__*/function (_View) {
   }, {
     key: "_generateMarkup",
     value: function _generateMarkup() {
-      var header = "<span class=\"text\">\n                    <h2 class=\"header-text\">Search Results</h2>\n                    </span>";
-      var curPage = this._data.page;
-      var numPages = Math.ceil(this._data.results.meals.length / this._data.resultsPerPage);
+      var curPage, numPages, header;
+
+      if (this._data.context === 'food') {
+        header = "<span class=\"text\">\n                  <h2 class=\"header-text\">Search Results</h2>\n                  </span>";
+        curPage = this._data.page;
+        numPages = Math.ceil(this._data.results.meals.length / this._data.resultsPerPage);
+      }
+
+      if (this._data.context === 'categ') {
+        header = "<span class=\"text\">\n      <h2 class=\"header-text\">Categories</h2>\n      </span>";
+        curPage = this._data.page;
+        numPages = Math.ceil(this._data.results.length / this._data.resultsPerPage);
+      }
 
       var rendNextButton = function rendNextButton() {
         return "<i class=\"fa fa-arrow-right\" aria-hidden=\"true\"></i>";
@@ -1556,7 +1697,7 @@ var PaginationView = /*#__PURE__*/function (_View) {
 var _default = new PaginationView();
 
 exports.default = _default;
-},{"./View.js":"src/js/views/View.js"}],"src/js/views/searchView.js":[function(require,module,exports) {
+},{"../View.js":"src/js/views/View.js"}],"src/js/views/searchView.js":[function(require,module,exports) {
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -1609,7 +1750,7 @@ var SearchView = /*#__PURE__*/function () {
 var _default = new SearchView();
 
 exports.default = _default;
-},{}],"src/js/views/paginationIngredientView.js":[function(require,module,exports) {
+},{}],"src/js/views/pagination/paginationIngredientView.js":[function(require,module,exports) {
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -1617,7 +1758,7 @@ Object.defineProperty(exports, "__esModule", {
 });
 exports.default = void 0;
 
-var _View2 = _interopRequireDefault(require("./View.js"));
+var _View2 = _interopRequireDefault(require("../View.js"));
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
@@ -1717,6 +1858,112 @@ var PaginationIngView = /*#__PURE__*/function (_View) {
 var _default = new PaginationIngView();
 
 exports.default = _default;
+},{"../View.js":"src/js/views/View.js"}],"src/js/views/categoriesView.js":[function(require,module,exports) {
+"use strict";
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+exports.default = void 0;
+
+var _View2 = _interopRequireDefault(require("./View.js"));
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+function _typeof(obj) { "@babel/helpers - typeof"; if (typeof Symbol === "function" && typeof Symbol.iterator === "symbol") { _typeof = function _typeof(obj) { return typeof obj; }; } else { _typeof = function _typeof(obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; }; } return _typeof(obj); }
+
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+function _defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } }
+
+function _createClass(Constructor, protoProps, staticProps) { if (protoProps) _defineProperties(Constructor.prototype, protoProps); if (staticProps) _defineProperties(Constructor, staticProps); return Constructor; }
+
+function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function"); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, writable: true, configurable: true } }); if (superClass) _setPrototypeOf(subClass, superClass); }
+
+function _setPrototypeOf(o, p) { _setPrototypeOf = Object.setPrototypeOf || function _setPrototypeOf(o, p) { o.__proto__ = p; return o; }; return _setPrototypeOf(o, p); }
+
+function _createSuper(Derived) { var hasNativeReflectConstruct = _isNativeReflectConstruct(); return function _createSuperInternal() { var Super = _getPrototypeOf(Derived), result; if (hasNativeReflectConstruct) { var NewTarget = _getPrototypeOf(this).constructor; result = Reflect.construct(Super, arguments, NewTarget); } else { result = Super.apply(this, arguments); } return _possibleConstructorReturn(this, result); }; }
+
+function _possibleConstructorReturn(self, call) { if (call && (_typeof(call) === "object" || typeof call === "function")) { return call; } return _assertThisInitialized(self); }
+
+function _assertThisInitialized(self) { if (self === void 0) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return self; }
+
+function _isNativeReflectConstruct() { if (typeof Reflect === "undefined" || !Reflect.construct) return false; if (Reflect.construct.sham) return false; if (typeof Proxy === "function") return true; try { Boolean.prototype.valueOf.call(Reflect.construct(Boolean, [], function () {})); return true; } catch (e) { return false; } }
+
+function _getPrototypeOf(o) { _getPrototypeOf = Object.setPrototypeOf ? Object.getPrototypeOf : function _getPrototypeOf(o) { return o.__proto__ || Object.getPrototypeOf(o); }; return _getPrototypeOf(o); }
+
+function _defineProperty(obj, key, value) { if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); } else { obj[key] = value; } return obj; }
+
+var categoriesView = /*#__PURE__*/function (_View) {
+  _inherits(categoriesView, _View);
+
+  var _super = _createSuper(categoriesView);
+
+  function categoriesView() {
+    var _this;
+
+    _classCallCheck(this, categoriesView);
+
+    for (var _len = arguments.length, args = new Array(_len), _key = 0; _key < _len; _key++) {
+      args[_key] = arguments[_key];
+    }
+
+    _this = _super.call.apply(_super, [this].concat(args));
+
+    _defineProperty(_assertThisInitialized(_this), "_parentElement", document.querySelector('.grid'));
+
+    _defineProperty(_assertThisInitialized(_this), "_overlay", document.querySelector('.querry-box'));
+
+    _defineProperty(_assertThisInitialized(_this), "_content", document.querySelector('.search'));
+
+    _defineProperty(_assertThisInitialized(_this), "_errorMessage", 'We could not find any categories');
+
+    _defineProperty(_assertThisInitialized(_this), "_message", '');
+
+    return _this;
+  }
+
+  _createClass(categoriesView, [{
+    key: "addHandlerClick",
+    value: function addHandlerClick(handler) {
+      this._parentElement.addEventListener('click', function (e) {
+        if (!(e.target.className === 'small-imgs categ')) return;
+        var category = e.target.closest('.item').id;
+        handler(category);
+      });
+    }
+  }, {
+    key: "hideWindow",
+    value: function hideWindow() {
+      this._overlay.classList.add('hidden');
+
+      this._content.classList.add('hidden');
+    }
+  }, {
+    key: "openWindow",
+    value: function openWindow() {
+      this._overlay.classList.remove('hidden');
+
+      this._content.classList.remove('hidden');
+    }
+  }, {
+    key: "_generateMarkup",
+    value: function _generateMarkup() {
+      this._clear();
+
+      this.openWindow();
+      return this._data.map(function (recipe) {
+        return "\n        <i class=\"item\" id=\"".concat(recipe.strCategory, "\">\n        <img src=\"").concat(recipe.strCategoryThumb, "\" class=\"small-imgs categ\"/>\n        <h6 class=\"center\">").concat(recipe.strCategory, "</h6>\n        </i>");
+      }).join('');
+    }
+  }]);
+
+  return categoriesView;
+}(_View2.default);
+
+var _default = new categoriesView();
+
+exports.default = _default;
 },{"./View.js":"src/js/views/View.js"}],"src/js/controller.js":[function(require,module,exports) {
 "use strict";
 
@@ -1728,11 +1975,15 @@ var _ingredientView = _interopRequireDefault(require("./views/ingredientView.js"
 
 var _navView = _interopRequireDefault(require("./views/navView.js"));
 
-var _paginationFoodView = _interopRequireDefault(require("./views/paginationFoodView.js"));
+var _paginationFoodView = _interopRequireDefault(require("./views//pagination/paginationFoodView.js"));
 
 var _searchView = _interopRequireDefault(require("./views/searchView.js"));
 
-var _paginationIngredientView = _interopRequireDefault(require("./views/paginationIngredientView.js"));
+var _paginationIngredientView = _interopRequireDefault(require("./views/pagination/paginationIngredientView.js"));
+
+var _categoriesView = _interopRequireDefault(require("./views/categoriesView.js"));
+
+var _regeneratorRuntime = require("regenerator-runtime");
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
@@ -1743,13 +1994,6 @@ function _interopRequireWildcard(obj) { if (obj && obj.__esModule) { return obj;
 function asyncGeneratorStep(gen, resolve, reject, _next, _throw, key, arg) { try { var info = gen[key](arg); var value = info.value; } catch (error) { reject(error); return; } if (info.done) { resolve(value); } else { Promise.resolve(value).then(_next, _throw); } }
 
 function _asyncToGenerator(fn) { return function () { var self = this, args = arguments; return new Promise(function (resolve, reject) { var gen = fn.apply(self, args); function _next(value) { asyncGeneratorStep(gen, resolve, reject, _next, _throw, "next", value); } function _throw(err) { asyncGeneratorStep(gen, resolve, reject, _next, _throw, "throw", err); } _next(undefined); }); }; }
-
-var controlNavBar = function controlNavBar(e) {
-  // Event delegation
-  if (e.target.className !== 'nav-text') return; // Guard clause
-
-  console.log('hello'); //tableName.textContent = e.target.textContent;
-};
 
 var controlSearch = /*#__PURE__*/function () {
   var _ref = _asyncToGenerator( /*#__PURE__*/regeneratorRuntime.mark(function _callee() {
@@ -1789,11 +2033,21 @@ var controlSearch = /*#__PURE__*/function () {
 }();
 
 var controlFoodPagination = function controlFoodPagination(goToPage) {
-  // 1) Render New Results
-  _foodsView.default.render(model.getSearchResultsPage(goToPage)); // 2) Render New Pagination Buttons
+  if (model.state.search.context === 'categ') {
+    // 1) Render New Results
+    _categoriesView.default.render(model.getSearchResultsPage(goToPage, model.state.search.results)); // 2) Render New Pagination Buttons
 
 
-  _paginationFoodView.default.render(model.state.search);
+    _paginationFoodView.default.render(model.state.search);
+  }
+
+  if (model.state.search.context === 'food') {
+    // 1) Render New Results
+    _foodsView.default.render(model.getSearchResultsPage(goToPage)); // 2) Render New Pagination Buttons
+
+
+    _paginationFoodView.default.render(model.state.search);
+  }
 };
 
 var makeIngObject = function makeIngObject(goToPage) {
@@ -1856,9 +2110,91 @@ var controlIngPagination = function controlIngPagination(goToPage) {
   _paginationIngredientView.default.render(objToRender, true, false);
 };
 
-var init = function init() {
-  _navView.default.addHandlerRender(controlNavBar);
+var controlNavigation = /*#__PURE__*/function () {
+  var _ref3 = _asyncToGenerator( /*#__PURE__*/regeneratorRuntime.mark(function _callee3(navStr) {
+    var data;
+    return regeneratorRuntime.wrap(function _callee3$(_context3) {
+      while (1) {
+        switch (_context3.prev = _context3.next) {
+          case 0:
+            _context3.t0 = navStr;
+            _context3.next = _context3.t0 === 'categ' ? 3 : _context3.t0 === 'luck' ? 8 : _context3.t0 === 'bookmark' ? 12 : _context3.t0 === 'about' ? 13 : 14;
+            break;
 
+          case 3:
+            _context3.next = 5;
+            return model.loadCategories();
+
+          case 5:
+            _categoriesView.default.render(model.getSearchResultsPage(1, model.state.search.results));
+
+            _paginationFoodView.default.render(model.state.search);
+
+            return _context3.abrupt("break", 15);
+
+          case 8:
+            _context3.next = 10;
+            return model.loadLucky();
+
+          case 10:
+            data = _context3.sent;
+            return _context3.abrupt("break", 15);
+
+          case 12:
+            return _context3.abrupt("break", 15);
+
+          case 13:
+            return _context3.abrupt("break", 15);
+
+          case 14:
+            console.error('Unknown nav');
+
+          case 15:
+          case "end":
+            return _context3.stop();
+        }
+      }
+    }, _callee3);
+  }));
+
+  return function controlNavigation(_x2) {
+    return _ref3.apply(this, arguments);
+  };
+}();
+
+var controlCategories = /*#__PURE__*/function () {
+  var _ref4 = _asyncToGenerator( /*#__PURE__*/regeneratorRuntime.mark(function _callee4(category) {
+    return regeneratorRuntime.wrap(function _callee4$(_context4) {
+      while (1) {
+        switch (_context4.prev = _context4.next) {
+          case 0:
+            _context4.next = 2;
+            return model.loadCategorySearch(category);
+
+          case 2:
+            // 2) Hide Category View
+            _categoriesView.default.hideWindow(); // 3) Show Food View
+
+
+            _foodsView.default.render(model.getSearchResultsPage()); // 4) Render Buttons
+
+
+            _paginationFoodView.default.render(model.state.search);
+
+          case 5:
+          case "end":
+            return _context4.stop();
+        }
+      }
+    }, _callee4);
+  }));
+
+  return function controlCategories(_x3) {
+    return _ref4.apply(this, arguments);
+  };
+}();
+
+var init = function init() {
   _searchView.default.addHandlerSearch(controlSearch);
 
   _paginationFoodView.default.addHandlerClick(controlFoodPagination);
@@ -1866,10 +2202,14 @@ var init = function init() {
   _foodsView.default.addHandlerClick(controlImages);
 
   _paginationIngredientView.default.addHandlerClick(controlIngPagination);
+
+  _navView.default.addHandlerClick(controlNavigation);
+
+  _categoriesView.default.addHandlerClick(controlCategories);
 };
 
 init();
-},{"./model.js":"src/js/model.js","./views/foodsView.js":"src/js/views/foodsView.js","./views/ingredientView.js":"src/js/views/ingredientView.js","./views/navView.js":"src/js/views/navView.js","./views/paginationFoodView.js":"src/js/views/paginationFoodView.js","./views/searchView.js":"src/js/views/searchView.js","./views/paginationIngredientView.js":"src/js/views/paginationIngredientView.js"}],"node_modules/parcel-bundler/src/builtins/hmr-runtime.js":[function(require,module,exports) {
+},{"./model.js":"src/js/model.js","./views/foodsView.js":"src/js/views/foodsView.js","./views/ingredientView.js":"src/js/views/ingredientView.js","./views/navView.js":"src/js/views/navView.js","./views//pagination/paginationFoodView.js":"src/js/views/pagination/paginationFoodView.js","./views/searchView.js":"src/js/views/searchView.js","./views/pagination/paginationIngredientView.js":"src/js/views/pagination/paginationIngredientView.js","./views/categoriesView.js":"src/js/views/categoriesView.js","regenerator-runtime":"node_modules/regenerator-runtime/runtime.js"}],"node_modules/parcel-bundler/src/builtins/hmr-runtime.js":[function(require,module,exports) {
 var global = arguments[3];
 var OVERLAY_ID = '__parcel__error__overlay__';
 var OldModule = module.bundle.Module;
@@ -1897,7 +2237,7 @@ var parent = module.bundle.parent;
 if ((!parent || !parent.isParcelRequire) && typeof WebSocket !== 'undefined') {
   var hostname = "" || location.hostname;
   var protocol = location.protocol === 'https:' ? 'wss' : 'ws';
-  var ws = new WebSocket(protocol + '://' + hostname + ':' + "50075" + '/');
+  var ws = new WebSocket(protocol + '://' + hostname + ':' + "64119" + '/');
 
   ws.onmessage = function (event) {
     checkedAssets = {};

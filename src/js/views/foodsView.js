@@ -14,7 +14,8 @@ class foodsView extends View {
 
   addHandlerClick(handler) {
     this._parentElement.addEventListener('click', function (e) {
-      if (!e.target.className === 'small-imgs') return;
+      if (!(e.target.className === 'small-imgs food')) return;
+
       const foodID = e.target.closest('.item').id;
       handler(foodID);
     });
@@ -36,7 +37,7 @@ class foodsView extends View {
         }
         return `
         <i class="item" id="${recipe.idMeal}">
-        <img src="${recipe.strMealThumb}" class="small-imgs"/>
+        <img src="${recipe.strMealThumb}" class="small-imgs food"/>
         <h6>${recipe.strMeal}</h6>
         </i>`;
       })

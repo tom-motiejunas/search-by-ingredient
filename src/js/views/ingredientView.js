@@ -24,8 +24,6 @@ class foodsView extends View {
     <i class="ingredient-quantity">${this._data.quantities[i]}</i>`
       )
       .join('');
-    // const pagedIngredientMarkup = getPage(1, ingredientMarkup, 6).join('');
-    // const buttons = renderButtonIngPage(2, 3);
     return `<div class="green-filter">
                   <img
                     src="${this._data.strMealThumb}"

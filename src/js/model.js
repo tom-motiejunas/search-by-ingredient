@@ -7,6 +7,7 @@ export const state = {
     results: [],
     page: 1,
     resultsPerPage: 9,
+    context: '',
   },
   ingredient: {
     id: '',
@@ -33,8 +34,8 @@ export const loadSearchResults = async function (query) {
       `https://www.themealdb.com/api/json/v1/1/filter.php?i=${query}`
     );
     state.search.results = data;
-
     state.search.page = 1; // Resetting page count if we got new searches
+    state.search.context = 'food'; // Changing context
   } catch (err) {
     console.error(err);
   }
@@ -52,7 +53,7 @@ export const getSearchResultsPage = function (
 ) {
   // Finding what page to load;
   if (!page) page = 1;
-  if (arr === state.search.results.meals) {
+  if (arr === state.search.results.meals || arr === state.search.results) {
     state.search.page += getNewPageNumber(page);
     page = state.search.page;
   } else {
@@ -64,7 +65,6 @@ export const getSearchResultsPage = function (
 export const getPage = function (pageNum, arr, RES_PER_PAGE = 9) {
   const lowerLim = (pageNum - 1) * RES_PER_PAGE;
   const upperLim = pageNum * RES_PER_PAGE;
-  const pages = Math.ceil(arr.length / RES_PER_PAGE);
   return arr.slice(lowerLim, upperLim);
 };
 
@@ -76,6 +76,38 @@ export const loadFoodIng = async function (id) {
     state.ingredient.page = 1;
     state.ingredient.id = id;
     state.ingredient.results = data.meals[0];
+  } catch (err) {
+    console.error(err);
+  }
+};
+export const loadCategories = async function () {
+  try {
+    const data = await apiCall(
+      'https://www.themealdb.com/api/json/v1/1/categories.php'
+    );
+    state.search.results = data.categories;
+    state.search.page = 1; // Resetting page count if we got new searches
+    state.search.context = 'categ'; // Changing context
+  } catch (err) {
+    console.error(err);
+  }
+};
+export const loadLucky = async function () {
+  try {
+    return await apiCall('https://www.themealdb.com/api/json/v1/1/random.php');
+  } catch (err) {
+    console.error(err);
+  }
+};
+
+export const loadCategorySearch = async function (category) {
+  try {
+    const data = await apiCall(
+      `https://www.themealdb.com/api/json/v1/1/filter.php?c=${category}`
+    );
+    state.search.results = data;
+    state.search.page = 1; // Resetting page count if we got new searches
+    state.search.context = 'food'; // Changing context
   } catch (err) {
     console.error(err);
   }

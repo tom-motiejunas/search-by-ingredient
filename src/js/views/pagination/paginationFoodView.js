@@ -1,5 +1,5 @@
 //import icons from 'url:../../img/icons.svg'; // Parcel 2
-import View from './View.js';
+import View from '../View.js';
 
 class PaginationView extends View {
   _parentElement = document.querySelector('.header');
@@ -14,13 +14,25 @@ class PaginationView extends View {
   }
 
   _generateMarkup() {
-    const header = `<span class="text">
-                    <h2 class="header-text">Search Results</h2>
-                    </span>`;
-    const curPage = this._data.page;
-    const numPages = Math.ceil(
-      this._data.results.meals.length / this._data.resultsPerPage
-    );
+    let curPage, numPages, header;
+    if (this._data.context === 'food') {
+      header = `<span class="text">
+                  <h2 class="header-text">Search Results</h2>
+                  </span>`;
+      curPage = this._data.page;
+      numPages = Math.ceil(
+        this._data.results.meals.length / this._data.resultsPerPage
+      );
+    }
+    if (this._data.context === 'categ') {
+      header = `<span class="text">
+      <h2 class="header-text">Categories</h2>
+      </span>`;
+      curPage = this._data.page;
+      numPages = Math.ceil(
+        this._data.results.length / this._data.resultsPerPage
+      );
+    }
     const rendNextButton = function () {
       return `<i class="fa fa-arrow-right" aria-hidden="true"></i>`;
     };
