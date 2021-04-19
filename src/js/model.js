@@ -94,7 +94,12 @@ export const loadCategories = async function () {
 };
 export const loadLucky = async function () {
   try {
-    return await apiCall('https://www.themealdb.com/api/json/v1/1/random.php');
+    const data = await apiCall(
+      'https://www.themealdb.com/api/json/v1/1/random.php'
+    );
+    state.search.results = data;
+    state.search.page = 1; // Resetting page count if we got new searches
+    state.search.context = 'luck'; // Changing context
   } catch (err) {
     console.error(err);
   }

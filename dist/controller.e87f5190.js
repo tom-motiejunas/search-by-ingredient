@@ -1108,6 +1108,8 @@ exports.loadCategories = loadCategories;
 
 var loadLucky = /*#__PURE__*/function () {
   var _ref5 = _asyncToGenerator( /*#__PURE__*/_regeneratorRuntime.default.mark(function _callee5() {
+    var _data4;
+
     return _regeneratorRuntime.default.wrap(function _callee5$(_context5) {
       while (1) {
         switch (_context5.prev = _context5.next) {
@@ -1117,19 +1119,26 @@ var loadLucky = /*#__PURE__*/function () {
             return apiCall('https://www.themealdb.com/api/json/v1/1/random.php');
 
           case 3:
-            return _context5.abrupt("return", _context5.sent);
+            _data4 = _context5.sent;
+            state.search.results = _data4;
+            state.search.page = 1; // Resetting page count if we got new searches
 
-          case 6:
-            _context5.prev = 6;
+            state.search.context = 'luck'; // Changing context
+
+            _context5.next = 12;
+            break;
+
+          case 9:
+            _context5.prev = 9;
             _context5.t0 = _context5["catch"](0);
             console.error(_context5.t0);
 
-          case 9:
+          case 12:
           case "end":
             return _context5.stop();
         }
       }
-    }, _callee5, null, [[0, 6]]);
+    }, _callee5, null, [[0, 9]]);
   }));
 
   return function loadLucky() {
@@ -1141,7 +1150,7 @@ exports.loadLucky = loadLucky;
 
 var loadCategorySearch = /*#__PURE__*/function () {
   var _ref6 = _asyncToGenerator( /*#__PURE__*/_regeneratorRuntime.default.mark(function _callee6(category) {
-    var _data4;
+    var _data5;
 
     return _regeneratorRuntime.default.wrap(function _callee6$(_context6) {
       while (1) {
@@ -1152,8 +1161,8 @@ var loadCategorySearch = /*#__PURE__*/function () {
             return apiCall("https://www.themealdb.com/api/json/v1/1/filter.php?c=".concat(category));
 
           case 3:
-            _data4 = _context6.sent;
-            state.search.results = _data4;
+            _data5 = _context6.sent;
+            state.search.results = _data5;
             state.search.page = 1; // Resetting page count if we got new searches
 
             state.search.context = 'food'; // Changing context
@@ -1661,6 +1670,12 @@ var PaginationView = /*#__PURE__*/function (_View) {
         numPages = Math.ceil(this._data.results.length / this._data.resultsPerPage);
       }
 
+      if (this._data.context === 'luck') {
+        header = "<span class=\"text\">\n      <h2 class=\"header-text\">Lucky Search</h2>\n      </span>";
+        curPage = this._data.page;
+        numPages = Math.ceil(this._data.results.meals.length / this._data.resultsPerPage);
+      }
+
       var rendNextButton = function rendNextButton() {
         return "<i class=\"fa fa-arrow-right\" aria-hidden=\"true\"></i>";
       };
@@ -2118,7 +2133,7 @@ var controlNavigation = /*#__PURE__*/function () {
         switch (_context3.prev = _context3.next) {
           case 0:
             _context3.t0 = navStr;
-            _context3.next = _context3.t0 === 'categ' ? 3 : _context3.t0 === 'luck' ? 8 : _context3.t0 === 'bookmark' ? 12 : _context3.t0 === 'about' ? 13 : 14;
+            _context3.next = _context3.t0 === 'categ' ? 3 : _context3.t0 === 'luck' ? 9 : _context3.t0 === 'bookmark' ? 15 : _context3.t0 === 'about' ? 16 : 17;
             break;
 
           case 3:
@@ -2128,28 +2143,38 @@ var controlNavigation = /*#__PURE__*/function () {
           case 5:
             _categoriesView.default.render(model.getSearchResultsPage(1, model.state.search.results));
 
+            _ingredientView.default.hideWindow();
+
             _paginationFoodView.default.render(model.state.search);
 
-            return _context3.abrupt("break", 15);
+            return _context3.abrupt("break", 18);
 
-          case 8:
-            _context3.next = 10;
+          case 9:
+            _context3.next = 11;
             return model.loadLucky();
 
-          case 10:
-            data = _context3.sent;
-            return _context3.abrupt("break", 15);
+          case 11:
+            // 2) Hide Ingredient View (if there is)
+            _ingredientView.default.hideWindow(); // 3) Render Results
 
-          case 12:
-            return _context3.abrupt("break", 15);
 
-          case 13:
-            return _context3.abrupt("break", 15);
+            _foodsView.default.render(model.getSearchResultsPage()); // 4) Render Buttons
 
-          case 14:
-            console.error('Unknown nav');
+
+            _paginationFoodView.default.render(model.state.search);
+
+            return _context3.abrupt("break", 18);
 
           case 15:
+            return _context3.abrupt("break", 18);
+
+          case 16:
+            return _context3.abrupt("break", 18);
+
+          case 17:
+            console.error('Unknown nav');
+
+          case 18:
           case "end":
             return _context3.stop();
         }
@@ -2237,7 +2262,7 @@ var parent = module.bundle.parent;
 if ((!parent || !parent.isParcelRequire) && typeof WebSocket !== 'undefined') {
   var hostname = "" || location.hostname;
   var protocol = location.protocol === 'https:' ? 'wss' : 'ws';
-  var ws = new WebSocket(protocol + '://' + hostname + ':' + "64119" + '/');
+  var ws = new WebSocket(protocol + '://' + hostname + ':' + "50436" + '/');
 
   ws.onmessage = function (event) {
     checkedAssets = {};

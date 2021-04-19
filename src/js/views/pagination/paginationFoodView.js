@@ -33,6 +33,15 @@ class PaginationView extends View {
         this._data.results.length / this._data.resultsPerPage
       );
     }
+    if (this._data.context === 'luck') {
+      header = `<span class="text">
+      <h2 class="header-text">Lucky Search</h2>
+      </span>`;
+      curPage = this._data.page;
+      numPages = Math.ceil(
+        this._data.results.meals.length / this._data.resultsPerPage
+      );
+    }
     const rendNextButton = function () {
       return `<i class="fa fa-arrow-right" aria-hidden="true"></i>`;
     };

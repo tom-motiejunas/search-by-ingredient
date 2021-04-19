@@ -98,10 +98,18 @@ const controlNavigation = async function (navStr) {
       categoriesView.render(
         model.getSearchResultsPage(1, model.state.search.results)
       );
+      ingredientView.hideWindow();
       paginationFoodView.render(model.state.search);
       break;
     case 'luck':
-      data = await model.loadLucky();
+      // 1) load data
+      await model.loadLucky();
+      // 2) Hide Ingredient View (if there is)
+      ingredientView.hideWindow();
+      // 3) Render Results
+      foodsView.render(model.getSearchResultsPage());
+      // 4) Render Buttons
+      paginationFoodView.render(model.state.search);
       break;
     case 'bookmark':
       break;
@@ -110,14 +118,6 @@ const controlNavigation = async function (navStr) {
     default:
       console.error('Unknown nav');
   }
-  // 3) Hide Ingredient View (if there is)
-  //  ingredientView.hideWindow();
-  // 4) Render Results
-  //  foodsView.render(model.getSearchResultsPage());
-
-  // 5) Render Buttons
-  //  paginationFoodView.render(model.state.search);
-  // console.log(model.state.search.results);
 };
 
 const controlCategories = async function (category) {
