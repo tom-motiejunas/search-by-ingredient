@@ -1458,6 +1458,14 @@ var foodsView = /*#__PURE__*/function (_View) {
   }
 
   _createClass(foodsView, [{
+    key: "addHandlerClick",
+    value: function addHandlerClick(handler) {
+      this._parentElement.addEventListener('click', function (e) {
+        if (!(e.target.className === 'goto-recipe')) return;
+        handler(e.target.attributes.link.nodeValue);
+      });
+    }
+  }, {
     key: "hideWindow",
     value: function hideWindow() {
       this._content.classList.remove('hidden');
@@ -1476,13 +1484,14 @@ var foodsView = /*#__PURE__*/function (_View) {
     value: function _generateMarkup() {
       var _this2 = this;
 
+      console.log(this);
       this.openWindow();
 
       var ingredients = this._data.ingredients.map(function (ing, i) {
         return "\n    <i class=\"ingredient-item\">".concat(ing, "</i>\n    <i class=\"ingredient-quantity\">").concat(_this2._data.quantities[i], "</i>");
       }).join('');
 
-      return "<div class=\"green-filter\">\n                  <img\n                    src=\"".concat(this._data.strMealThumb, "\"\n                    class=\"food-photo\"\n                    />\n                </div>\n                <h1 class=\"ingredient-text\">Ingredients</h1>\n                <div class=\"grid ingredient-box\">\n                ").concat(ingredients, "\n                </div>\n                <div class=\"center\">\n                  <button class=\"goto-recipe\">Go to Page\n                  </div>");
+      return "<div class=\"green-filter\">\n                  <img\n                    src=\"".concat(this._data.strMealThumb, "\"\n                    class=\"food-photo\"\n                    />\n                </div>\n                <h1 class=\"ingredient-text\">Ingredients</h1>\n                <div class=\"grid ingredient-box\">\n                ").concat(ingredients, "\n                </div>\n                <div class=\"center\">\n                  <button class=\"goto-recipe\" link=\"").concat(this._data.strYoutube, "\">Go to Page\n                  </div>");
     }
   }]);
 
@@ -2069,6 +2078,7 @@ var makeIngObject = function makeIngObject(goToPage) {
   return {
     // Food image
     strMealThumb: model.state.ingredient.results.strMealThumb,
+    strYoutube: model.state.ingredient.results.strYoutube,
     // Food ingredient (only 6 per page)
     ingredients: model.getSearchResultsPage(goToPage, model.getKeysArr(model.state.ingredient.results, 'strIngredient'), model.state.ingredient.resultsPerPage),
     // Food Ingredient Quantities (only 6 per page)
@@ -2077,6 +2087,10 @@ var makeIngObject = function makeIngObject(goToPage) {
     resultsPerPage: model.state.ingredient.resultsPerPage,
     allIngredients: model.getKeysArr(model.state.ingredient.results, 'strIngredient')
   };
+};
+
+var controlIngredient = function controlIngredient(website) {
+  window.open(website, 'Youtube_WindowName');
 };
 
 var controlImages = /*#__PURE__*/function () {
@@ -2231,6 +2245,8 @@ var init = function init() {
   _navView.default.addHandlerClick(controlNavigation);
 
   _categoriesView.default.addHandlerClick(controlCategories);
+
+  _ingredientView.default.addHandlerClick(controlIngredient);
 };
 
 init();

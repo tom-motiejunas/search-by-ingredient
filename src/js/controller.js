@@ -45,6 +45,7 @@ const makeIngObject = function (goToPage) {
   return {
     // Food image
     strMealThumb: model.state.ingredient.results.strMealThumb,
+    strYoutube: model.state.ingredient.results.strYoutube,
     // Food ingredient (only 6 per page)
     ingredients: model.getSearchResultsPage(
       goToPage,
@@ -64,6 +65,10 @@ const makeIngObject = function (goToPage) {
       'strIngredient'
     ),
   };
+};
+
+const controlIngredient = function (website) {
+  window.open(website, 'Youtube_WindowName');
 };
 
 const controlImages = async function (foodID) {
@@ -138,5 +143,6 @@ const init = function () {
   paginationIngView.addHandlerClick(controlIngPagination);
   navView.addHandlerClick(controlNavigation);
   categoriesView.addHandlerClick(controlCategories);
+  ingredientView.addHandlerClick(controlIngredient);
 };
 init();

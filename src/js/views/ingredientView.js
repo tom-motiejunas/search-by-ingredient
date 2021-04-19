@@ -6,6 +6,13 @@ class foodsView extends View {
   _content = document.querySelector('.search');
   _message = '';
 
+  addHandlerClick(handler) {
+    this._parentElement.addEventListener('click', function (e) {
+      if (!(e.target.className === 'goto-recipe')) return;
+      handler(e.target.attributes.link.nodeValue);
+    });
+  }
+
   hideWindow() {
     this._content.classList.remove('hidden');
     this._parentElement.classList.add('hidden');
@@ -16,6 +23,7 @@ class foodsView extends View {
   }
 
   _generateMarkup() {
+    console.log(this);
     this.openWindow();
     const ingredients = this._data.ingredients
       .map(
@@ -35,7 +43,7 @@ class foodsView extends View {
                 ${ingredients}
                 </div>
                 <div class="center">
-                  <button class="goto-recipe">Go to Page
+                  <button class="goto-recipe" link="${this._data.strYoutube}">Go to Page
                   </div>`;
   }
 }
