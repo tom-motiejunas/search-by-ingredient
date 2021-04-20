@@ -874,7 +874,7 @@ try {
 Object.defineProperty(exports, "__esModule", {
   value: true
 });
-exports.getKeysArr = exports.getButtonIngPage = exports.getButtonsFoodPage = exports.loadCategorySearch = exports.loadLucky = exports.loadCategories = exports.loadFoodIng = exports.getPage = exports.getSearchResultsPage = exports.getNewPageNumber = exports.loadSearchResults = exports.apiCall = exports.state = void 0;
+exports.getBookmarkPage = exports.toggleBookmark = exports.getKeysArr = exports.getButtonIngPage = exports.getButtonsFoodPage = exports.loadCategorySearch = exports.loadLucky = exports.loadCategories = exports.loadFoodIng = exports.getPage = exports.getSearchResultsPage = exports.getNewPageNumber = exports.loadSearchResults = exports.apiCall = exports.state = void 0;
 
 var _regeneratorRuntime = _interopRequireDefault(require("regenerator-runtime"));
 
@@ -897,9 +897,13 @@ var state = {
     id: '',
     results: [],
     page: 1,
-    resultsPerPage: 6
+    resultsPerPage: 6,
+    isBookmarked: false
   },
-  bookmarks: []
+  bookmarks: {
+    entries: [],
+    resultsPerPage: 9
+  }
 };
 exports.state = state;
 
@@ -1233,6 +1237,46 @@ var getKeysArr = function getKeysArr(ingObj, str) {
 };
 
 exports.getKeysArr = getKeysArr;
+
+var toggleBookmark = function toggleBookmark(recipe) {
+  if (recipe.isBookmarked === true) {
+    recipe.isBookmarked = false;
+    deleteBookmark(recipe.id);
+  } else {
+    recipe.isBookmarked = true;
+    state.bookmarks.entries.push(recipe);
+    localStorage.setItem('bookmarks', JSON.stringify(state.bookmarks.entries));
+  }
+
+  state.ingredient.isBookmarked = true;
+};
+
+exports.toggleBookmark = toggleBookmark;
+
+var getBookmarkPage = function getBookmarkPage() {
+  var arr = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : state.bookmarks.entries;
+  var RES_PER_PAGE = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : 9;
+  state.bookmarks.page = 1;
+  state.bookmarks.page += getNewPageNumber(page);
+  var page = state.bookmarks.entries.page;
+  state.bookmarks.context = 'bookmark';
+  return getPage(state.bookmarks.page, arr, RES_PER_PAGE);
+}; // const init = function () {
+//   state.bookmarks.entries = localStorage.getItem('bookmarks');
+//   if (state.bookmarks.entries)
+//     state.bookmarks = JSON.parse(state.bookmarks.entries);
+// };
+// init();
+
+
+exports.getBookmarkPage = getBookmarkPage;
+
+var deleteBookmark = function deleteBookmark(id) {
+  var index = state.bookmarks.entries.findIndex(function (el) {
+    return el.id === id;
+  });
+  state.bookmarks.entries.splice(index, 1);
+};
 },{"regenerator-runtime":"node_modules/regenerator-runtime/runtime.js"}],"src/js/views/View.js":[function(require,module,exports) {
 "use strict";
 
@@ -1266,7 +1310,6 @@ var View = /*#__PURE__*/function () {
       var _render = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : true;
 
       var isClear = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : true;
-      if (!data || Array.isArray(data) && data.length === 0) return this.renderError();
       this._data = data;
 
       var markup = this._generateMarkup();
@@ -1351,10 +1394,7 @@ var foodsView = /*#__PURE__*/function (_View) {
 
   _createClass(foodsView, [{
     key: "addHandlerClick",
-    value: // addHandlerArrow(handler) {
-    //   this._UIbtn.addEventListener('click', handler);
-    // }
-    function addHandlerClick(handler) {
+    value: function addHandlerClick(handler) {
       this._parentElement.addEventListener('click', function (e) {
         if (!(e.target.className === 'small-imgs food')) return;
         var foodID = e.target.closest('.item').id;
@@ -1484,14 +1524,14 @@ var foodsView = /*#__PURE__*/function (_View) {
     value: function _generateMarkup() {
       var _this2 = this;
 
-      console.log(this);
       this.openWindow();
 
       var ingredients = this._data.ingredients.map(function (ing, i) {
         return "\n    <i class=\"ingredient-item\">".concat(ing, "</i>\n    <i class=\"ingredient-quantity\">").concat(_this2._data.quantities[i], "</i>");
       }).join('');
 
-      return "<div class=\"green-filter\">\n                  <img\n                    src=\"".concat(this._data.strMealThumb, "\"\n                    class=\"food-photo\"\n                    />\n                </div>\n                <h1 class=\"ingredient-text\">Ingredients</h1>\n                <div class=\"grid ingredient-box\">\n                ").concat(ingredients, "\n                </div>\n                <div class=\"center\">\n                  <button class=\"goto-recipe\" link=\"").concat(this._data.strYoutube, "\">Go to Page\n                  </div>");
+      var bookmark = this._data.isBookmarked ? '<i class="fa fa-bookmark" aria-hidden="true"></i>' : '<i class="fa fa-bookmark-o" aria-hidden="true"></i>';
+      return "\n              <div class=\"green-filter\">\n                  <img\n                    src=\"".concat(this._data.strMealThumb, "\"\n                    class=\"food-photo\"\n                    />\n                    ").concat(bookmark, "\n                </div>\n                <h1 class=\"ingredient-text\">Ingredients</h1>\n                <div class=\"grid ingredient-box\">\n                ").concat(ingredients, "\n                </div>\n                <div class=\"center\">\n                  <button class=\"goto-recipe\" link=\"").concat(this._data.strYoutube, "\">Go to Page\n                  </div>");
     }
   }]);
 
@@ -1668,21 +1708,28 @@ var PaginationView = /*#__PURE__*/function (_View) {
       var curPage, numPages, header;
 
       if (this._data.context === 'food') {
-        header = "<span class=\"text\">\n                  <h2 class=\"header-text\">Search Results</h2>\n                  </span>";
+        header = "<span class=\"text\">\n      <h2 class=\"header-text\">Search Results</h2>\n      </span>";
         curPage = this._data.page;
         numPages = Math.ceil(this._data.results.meals.length / this._data.resultsPerPage);
       }
 
       if (this._data.context === 'categ') {
-        header = "<span class=\"text\">\n      <h2 class=\"header-text\">Categories</h2>\n      </span>";
+        header = "<span class=\"text\">\n        <h2 class=\"header-text\">Categories</h2>\n        </span>";
         curPage = this._data.page;
         numPages = Math.ceil(this._data.results.length / this._data.resultsPerPage);
       }
 
       if (this._data.context === 'luck') {
-        header = "<span class=\"text\">\n      <h2 class=\"header-text\">Lucky Search</h2>\n      </span>";
+        header = "<span class=\"text\">\n          <h2 class=\"header-text\">Lucky Search</h2>\n          </span>";
         curPage = this._data.page;
         numPages = Math.ceil(this._data.results.meals.length / this._data.resultsPerPage);
+      }
+
+      if (this._data.context === 'bookmark') {
+        header = "<span class=\"text\">\n      <h2 class=\"header-text\">Bookmarks</h2>\n      </span>";
+        curPage = this._data.page;
+        numPages = Math.ceil(this._data.entries.length / this._data.resultsPerPage);
+        numPages = numPages ? numPages : 1;
       }
 
       var rendNextButton = function rendNextButton() {
@@ -1988,6 +2035,106 @@ var categoriesView = /*#__PURE__*/function (_View) {
 var _default = new categoriesView();
 
 exports.default = _default;
+},{"./View.js":"src/js/views/View.js"}],"src/js/views/bookmarkView.js":[function(require,module,exports) {
+"use strict";
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+exports.default = void 0;
+
+var _View2 = _interopRequireDefault(require("./View.js"));
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+function _typeof(obj) { "@babel/helpers - typeof"; if (typeof Symbol === "function" && typeof Symbol.iterator === "symbol") { _typeof = function _typeof(obj) { return typeof obj; }; } else { _typeof = function _typeof(obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; }; } return _typeof(obj); }
+
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+function _defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } }
+
+function _createClass(Constructor, protoProps, staticProps) { if (protoProps) _defineProperties(Constructor.prototype, protoProps); if (staticProps) _defineProperties(Constructor, staticProps); return Constructor; }
+
+function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function"); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, writable: true, configurable: true } }); if (superClass) _setPrototypeOf(subClass, superClass); }
+
+function _setPrototypeOf(o, p) { _setPrototypeOf = Object.setPrototypeOf || function _setPrototypeOf(o, p) { o.__proto__ = p; return o; }; return _setPrototypeOf(o, p); }
+
+function _createSuper(Derived) { var hasNativeReflectConstruct = _isNativeReflectConstruct(); return function _createSuperInternal() { var Super = _getPrototypeOf(Derived), result; if (hasNativeReflectConstruct) { var NewTarget = _getPrototypeOf(this).constructor; result = Reflect.construct(Super, arguments, NewTarget); } else { result = Super.apply(this, arguments); } return _possibleConstructorReturn(this, result); }; }
+
+function _possibleConstructorReturn(self, call) { if (call && (_typeof(call) === "object" || typeof call === "function")) { return call; } return _assertThisInitialized(self); }
+
+function _assertThisInitialized(self) { if (self === void 0) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return self; }
+
+function _isNativeReflectConstruct() { if (typeof Reflect === "undefined" || !Reflect.construct) return false; if (Reflect.construct.sham) return false; if (typeof Proxy === "function") return true; try { Boolean.prototype.valueOf.call(Reflect.construct(Boolean, [], function () {})); return true; } catch (e) { return false; } }
+
+function _getPrototypeOf(o) { _getPrototypeOf = Object.setPrototypeOf ? Object.getPrototypeOf : function _getPrototypeOf(o) { return o.__proto__ || Object.getPrototypeOf(o); }; return _getPrototypeOf(o); }
+
+function _defineProperty(obj, key, value) { if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); } else { obj[key] = value; } return obj; }
+
+var bookmarkView = /*#__PURE__*/function (_View) {
+  _inherits(bookmarkView, _View);
+
+  var _super = _createSuper(bookmarkView);
+
+  function bookmarkView() {
+    var _this;
+
+    _classCallCheck(this, bookmarkView);
+
+    for (var _len = arguments.length, args = new Array(_len), _key = 0; _key < _len; _key++) {
+      args[_key] = arguments[_key];
+    }
+
+    _this = _super.call.apply(_super, [this].concat(args));
+
+    _defineProperty(_assertThisInitialized(_this), "_parentElement", document.querySelector('.grid'));
+
+    _defineProperty(_assertThisInitialized(_this), "_UIbtn", document.querySelector('.fa'));
+
+    _defineProperty(_assertThisInitialized(_this), "_overlay", document.querySelector('.querry-box'));
+
+    _defineProperty(_assertThisInitialized(_this), "_content", document.querySelector('.search'));
+
+    _defineProperty(_assertThisInitialized(_this), "_errorMessage", 'We could not find any recipies with that ingredient');
+
+    _defineProperty(_assertThisInitialized(_this), "_message", '');
+
+    return _this;
+  }
+
+  _createClass(bookmarkView, [{
+    key: "openWindow",
+    value: function openWindow() {
+      this._overlay.classList.remove('hidden');
+
+      this._content.classList.remove('hidden');
+    }
+  }, {
+    key: "hideWindow",
+    value: function hideWindow() {
+      this._content.classList.add('hidden');
+    }
+  }, {
+    key: "_generateMarkup",
+    value: function _generateMarkup() {
+      this.openWindow();
+      return this._data.map(function (recipe) {
+        if (recipe.strMeal.length > 24) {
+          recipe.strMeal = "".concat(recipe.strMeal.slice(0, 21), "...");
+        }
+
+        return "\n        <i class=\"item\" id=\"".concat(recipe.id, "\">\n        <img src=\"").concat(recipe.strMealThumb, "\" class=\"small-imgs food\"/>\n        <h6>").concat(recipe.strMeal, "</h6>\n        </i>");
+      }).join('');
+    }
+  }]);
+
+  return bookmarkView;
+}(_View2.default);
+
+var _default = new bookmarkView(); //insertNewHTML(tableElements, markup);
+
+
+exports.default = _default;
 },{"./View.js":"src/js/views/View.js"}],"src/js/controller.js":[function(require,module,exports) {
 "use strict";
 
@@ -2008,6 +2155,8 @@ var _paginationIngredientView = _interopRequireDefault(require("./views/paginati
 var _categoriesView = _interopRequireDefault(require("./views/categoriesView.js"));
 
 var _regeneratorRuntime = require("regenerator-runtime");
+
+var _bookmarkView = _interopRequireDefault(require("./views/bookmarkView.js"));
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
@@ -2072,11 +2221,20 @@ var controlFoodPagination = function controlFoodPagination(goToPage) {
 
     _paginationFoodView.default.render(model.state.search);
   }
+
+  if (model.state.search.context === 'bookmarks') {
+    // 1) Render New Results
+    _bookmarkView.default.render(model.getSearchResultsPage(goToPage)); // 2) Render New Pagination Buttons
+
+
+    _paginationFoodView.default.render(model.bookmarks);
+  }
 };
 
 var makeIngObject = function makeIngObject(goToPage) {
   return {
     // Food image
+    strMeal: model.state.ingredient.results.strMeal,
     strMealThumb: model.state.ingredient.results.strMealThumb,
     strYoutube: model.state.ingredient.results.strYoutube,
     // Food ingredient (only 6 per page)
@@ -2085,7 +2243,8 @@ var makeIngObject = function makeIngObject(goToPage) {
     quantities: model.getSearchResultsPage(goToPage, model.getKeysArr(model.state.ingredient.results, 'strMeasure'), model.state.ingredient.resultsPerPage),
     page: model.state.ingredient.page,
     resultsPerPage: model.state.ingredient.resultsPerPage,
-    allIngredients: model.getKeysArr(model.state.ingredient.results, 'strIngredient')
+    allIngredients: model.getKeysArr(model.state.ingredient.results, 'strIngredient'),
+    id: model.state.ingredient.id
   };
 };
 
@@ -2095,7 +2254,7 @@ var controlIngredient = function controlIngredient(website) {
 
 var controlImages = /*#__PURE__*/function () {
   var _ref2 = _asyncToGenerator( /*#__PURE__*/regeneratorRuntime.mark(function _callee2(foodID) {
-    var objToRender;
+    var objToRender, check;
     return regeneratorRuntime.wrap(function _callee2$(_context2) {
       while (1) {
         switch (_context2.prev = _context2.next) {
@@ -2110,13 +2269,17 @@ var controlImages = /*#__PURE__*/function () {
 
 
             objToRender = makeIngObject(1);
+            check = model.state.bookmarks.entries.some(function (entry) {
+              return entry.id === objToRender.id;
+            });
+            if (check) objToRender.isBookmarked = true;else objToRender.isBookmarked = false;
 
             _ingredientView.default.render(objToRender); // 4) Add Pagination buttons
 
 
             _paginationIngredientView.default.render(objToRender, true, false);
 
-          case 6:
+          case 8:
           case "end":
             return _context2.stop();
         }
@@ -2130,9 +2293,43 @@ var controlImages = /*#__PURE__*/function () {
 }();
 
 var controlIngPagination = function controlIngPagination(goToPage) {
+  if (goToPage === 'fa-bookmark-o') {
+    var _objToRender = makeIngObject(1);
+
+    model.toggleBookmark(_objToRender);
+
+    _ingredientView.default.render(_objToRender);
+
+    _paginationIngredientView.default.render(_objToRender, true, false);
+
+    return;
+  }
+
+  if (goToPage === 'fa-bookmark') {
+    var _objToRender2 = makeIngObject(1);
+
+    var _check = model.state.bookmarks.entries.some(function (entry) {
+      return entry.id === _objToRender2.id;
+    });
+
+    if (_check) _objToRender2.isBookmarked = true;else _objToRender2.isBookmarked = false;
+    model.toggleBookmark(_objToRender2);
+
+    _ingredientView.default.render(_objToRender2);
+
+    _paginationIngredientView.default.render(_objToRender2, true, false);
+
+    return;
+  }
+
   goToPage = model.state.ingredient.page + model.getNewPageNumber(goToPage);
   model.state.ingredient.page = goToPage;
-  var objToRender = makeIngObject(2);
+  var objToRender = makeIngObject(2); // Check if that ingredient exist in booksmarks
+
+  var check = model.state.bookmarks.entries.some(function (entry) {
+    return entry.id === objToRender.id;
+  });
+  if (check) objToRender.isBookmarked = true;else objToRender.isBookmarked = false;
 
   _ingredientView.default.render(objToRender);
 
@@ -2147,7 +2344,7 @@ var controlNavigation = /*#__PURE__*/function () {
         switch (_context3.prev = _context3.next) {
           case 0:
             _context3.t0 = navStr;
-            _context3.next = _context3.t0 === 'categ' ? 3 : _context3.t0 === 'luck' ? 9 : _context3.t0 === 'bookmark' ? 15 : _context3.t0 === 'about' ? 16 : 17;
+            _context3.next = _context3.t0 === 'categ' ? 3 : _context3.t0 === 'luck' ? 9 : _context3.t0 === 'bookmark' ? 15 : _context3.t0 === 'about' ? 19 : 20;
             break;
 
           case 3:
@@ -2161,7 +2358,7 @@ var controlNavigation = /*#__PURE__*/function () {
 
             _paginationFoodView.default.render(model.state.search);
 
-            return _context3.abrupt("break", 18);
+            return _context3.abrupt("break", 21);
 
           case 9:
             _context3.next = 11;
@@ -2177,18 +2374,27 @@ var controlNavigation = /*#__PURE__*/function () {
 
             _paginationFoodView.default.render(model.state.search);
 
-            return _context3.abrupt("break", 18);
+            return _context3.abrupt("break", 21);
 
           case 15:
-            return _context3.abrupt("break", 18);
+            _ingredientView.default.hideWindow(); // 4) Render Results
 
-          case 16:
-            return _context3.abrupt("break", 18);
 
-          case 17:
+            _bookmarkView.default.render(model.getBookmarkPage()); // 5) Render Buttons
+
+
+            _paginationFoodView.default.render(model.state.bookmarks); // console.log(model.state.search.results);
+
+
+            return _context3.abrupt("break", 21);
+
+          case 19:
+            return _context3.abrupt("break", 21);
+
+          case 20:
             console.error('Unknown nav');
 
-          case 18:
+          case 21:
           case "end":
             return _context3.stop();
         }
@@ -2233,6 +2439,35 @@ var controlCategories = /*#__PURE__*/function () {
   };
 }();
 
+var controlBookmarks = /*#__PURE__*/function () {
+  var _ref5 = _asyncToGenerator( /*#__PURE__*/regeneratorRuntime.mark(function _callee5() {
+    return regeneratorRuntime.wrap(function _callee5$(_context5) {
+      while (1) {
+        switch (_context5.prev = _context5.next) {
+          case 0:
+            // 3) Hide Ingredient View (if there is)
+            _ingredientView.default.hideWindow(); // 4) Render Results
+
+
+            _bookmarkView.default.render(model.getBookmarkPage()); // 5) Render Buttons
+
+
+            _paginationFoodView.default.render(model.bookmarks.entries); // console.log(model.state.search.results);
+
+
+          case 3:
+          case "end":
+            return _context5.stop();
+        }
+      }
+    }, _callee5);
+  }));
+
+  return function controlBookmarks() {
+    return _ref5.apply(this, arguments);
+  };
+}();
+
 var init = function init() {
   _searchView.default.addHandlerSearch(controlSearch);
 
@@ -2250,7 +2485,7 @@ var init = function init() {
 };
 
 init();
-},{"./model.js":"src/js/model.js","./views/foodsView.js":"src/js/views/foodsView.js","./views/ingredientView.js":"src/js/views/ingredientView.js","./views/navView.js":"src/js/views/navView.js","./views//pagination/paginationFoodView.js":"src/js/views/pagination/paginationFoodView.js","./views/searchView.js":"src/js/views/searchView.js","./views/pagination/paginationIngredientView.js":"src/js/views/pagination/paginationIngredientView.js","./views/categoriesView.js":"src/js/views/categoriesView.js","regenerator-runtime":"node_modules/regenerator-runtime/runtime.js"}],"node_modules/parcel-bundler/src/builtins/hmr-runtime.js":[function(require,module,exports) {
+},{"./model.js":"src/js/model.js","./views/foodsView.js":"src/js/views/foodsView.js","./views/ingredientView.js":"src/js/views/ingredientView.js","./views/navView.js":"src/js/views/navView.js","./views//pagination/paginationFoodView.js":"src/js/views/pagination/paginationFoodView.js","./views/searchView.js":"src/js/views/searchView.js","./views/pagination/paginationIngredientView.js":"src/js/views/pagination/paginationIngredientView.js","./views/categoriesView.js":"src/js/views/categoriesView.js","regenerator-runtime":"node_modules/regenerator-runtime/runtime.js","./views/bookmarkView.js":"src/js/views/bookmarkView.js"}],"node_modules/parcel-bundler/src/builtins/hmr-runtime.js":[function(require,module,exports) {
 var global = arguments[3];
 var OVERLAY_ID = '__parcel__error__overlay__';
 var OldModule = module.bundle.Module;
@@ -2278,7 +2513,7 @@ var parent = module.bundle.parent;
 if ((!parent || !parent.isParcelRequire) && typeof WebSocket !== 'undefined') {
   var hostname = "" || location.hostname;
   var protocol = location.protocol === 'https:' ? 'wss' : 'ws';
-  var ws = new WebSocket(protocol + '://' + hostname + ':' + "50436" + '/');
+  var ws = new WebSocket(protocol + '://' + hostname + ':' + "64882" + '/');
 
   ws.onmessage = function (event) {
     checkedAssets = {};

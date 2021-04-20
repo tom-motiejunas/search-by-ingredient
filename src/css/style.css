@@ -256,3 +256,11 @@ form.search-bar button {
   background-color: var(--color-brand--2);
   cursor: pointer;
 }
+.fa-bookmark-o,
+.fa-bookmark {
+  position: absolute;
+  float: right;
+  font-size: 30px;
+  margin-right: 0.5rem;
+  right: 0.2rem;
+}

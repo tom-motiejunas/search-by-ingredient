@@ -23,7 +23,6 @@ class foodsView extends View {
   }
 
   _generateMarkup() {
-    console.log(this);
     this.openWindow();
     const ingredients = this._data.ingredients
       .map(
@@ -32,11 +31,16 @@ class foodsView extends View {
     <i class="ingredient-quantity">${this._data.quantities[i]}</i>`
       )
       .join('');
-    return `<div class="green-filter">
+    const bookmark = this._data.isBookmarked
+      ? '<i class="fa fa-bookmark" aria-hidden="true"></i>'
+      : '<i class="fa fa-bookmark-o" aria-hidden="true"></i>';
+    return `
+              <div class="green-filter">
                   <img
                     src="${this._data.strMealThumb}"
                     class="food-photo"
                     />
+                    ${bookmark}
                 </div>
                 <h1 class="ingredient-text">Ingredients</h1>
                 <div class="grid ingredient-box">

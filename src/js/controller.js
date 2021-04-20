@@ -7,6 +7,7 @@ import searchView from './views/searchView.js';
 import paginationIngView from './views/pagination/paginationIngredientView.js';
 import categoriesView from './views/categoriesView.js';
 import { async } from 'regenerator-runtime';
+import bookmarkView from './views/bookmarkView.js';
 
 const controlSearch = async function () {
   // 1) Getting search querry
@@ -39,11 +40,18 @@ const controlFoodPagination = function (goToPage) {
     // 2) Render New Pagination Buttons
     paginationFoodView.render(model.state.search);
   }
+  if (model.state.search.context === 'bookmarks') {
+    // 1) Render New Results
+    bookmarkView.render(model.getSearchResultsPage(goToPage));
+    // 2) Render New Pagination Buttons
+    paginationFoodView.render(model.bookmarks);
+  }
 };
 
 const makeIngObject = function (goToPage) {
   return {
     // Food image
+    strMeal: model.state.ingredient.results.strMeal,
     strMealThumb: model.state.ingredient.results.strMealThumb,
     strYoutube: model.state.ingredient.results.strYoutube,
     // Food ingredient (only 6 per page)
@@ -64,6 +72,7 @@ const makeIngObject = function (goToPage) {
       model.state.ingredient.results,
       'strIngredient'
     ),
+    id: model.state.ingredient.id,
   };
 };
 
@@ -79,15 +88,51 @@ const controlImages = async function (foodID) {
   // 3) Show Ingredient View
   // Making Object to send to render
   const objToRender = makeIngObject(1);
+
+  const check = model.state.bookmarks.entries.some(
+    entry => entry.id === objToRender.id
+  );
+  if (check) objToRender.isBookmarked = true;
+  else objToRender.isBookmarked = false;
+
   ingredientView.render(objToRender);
   // 4) Add Pagination buttons
   paginationIngView.render(objToRender, true, false);
 };
 
 const controlIngPagination = function (goToPage) {
+  if (goToPage === 'fa-bookmark-o') {
+    const objToRender = makeIngObject(1);
+    model.toggleBookmark(objToRender);
+    ingredientView.render(objToRender);
+    paginationIngView.render(objToRender, true, false);
+    return;
+  }
+  if (goToPage === 'fa-bookmark') {
+    const objToRender = makeIngObject(1);
+
+    const check = model.state.bookmarks.entries.some(
+      entry => entry.id === objToRender.id
+    );
+    if (check) objToRender.isBookmarked = true;
+    else objToRender.isBookmarked = false;
+
+    model.toggleBookmark(objToRender);
+    ingredientView.render(objToRender);
+    paginationIngView.render(objToRender, true, false);
+    return;
+  }
+
   goToPage = model.state.ingredient.page + model.getNewPageNumber(goToPage);
   model.state.ingredient.page = goToPage;
   const objToRender = makeIngObject(2);
+
+  // Check if that ingredient exist in booksmarks
+  const check = model.state.bookmarks.entries.some(
+    entry => entry.id === objToRender.id
+  );
+  if (check) objToRender.isBookmarked = true;
+  else objToRender.isBookmarked = false;
 
   ingredientView.render(objToRender);
 
@@ -117,6 +162,12 @@ const controlNavigation = async function (navStr) {
       paginationFoodView.render(model.state.search);
       break;
     case 'bookmark':
+      ingredientView.hideWindow();
+      // 4) Render Results
+      bookmarkView.render(model.getBookmarkPage());
+      // 5) Render Buttons
+      paginationFoodView.render(model.state.bookmarks);
+      // console.log(model.state.search.results);
       break;
     case 'about':
       break;
@@ -134,6 +185,16 @@ const controlCategories = async function (category) {
   foodsView.render(model.getSearchResultsPage());
   // 4) Render Buttons
   paginationFoodView.render(model.state.search);
+};
+
+const controlBookmarks = async function () {
+  // 3) Hide Ingredient View (if there is)
+  ingredientView.hideWindow();
+  // 4) Render Results
+  bookmarkView.render(model.getBookmarkPage());
+  // 5) Render Buttons
+  paginationFoodView.render(model.bookmarks.entries);
+  // console.log(model.state.search.results);
 };
 
 const init = function () {

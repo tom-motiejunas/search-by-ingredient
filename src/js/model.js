@@ -14,8 +14,9 @@ export const state = {
     results: [],
     page: 1,
     resultsPerPage: 6,
+    isBookmarked: false,
   },
-  bookmarks: [],
+  bookmarks: { entries: [], resultsPerPage: 9 },
 };
 
 export const apiCall = async function (url) {
@@ -150,4 +151,40 @@ export const getKeysArr = function (ingObj, str) {
     ing => ing.includes(str) && ingObj[ing]
   );
   return arr.map(str => ingObj[str]);
+};
+
+export const toggleBookmark = function (recipe) {
+  if (recipe.isBookmarked === true) {
+    recipe.isBookmarked = false;
+    deleteBookmark(recipe.id);
+  } else {
+    recipe.isBookmarked = true;
+    state.bookmarks.entries.push(recipe);
+    localStorage.setItem('bookmarks', JSON.stringify(state.bookmarks.entries));
+  }
+  state.ingredient.isBookmarked = true;
+};
+
+export const getBookmarkPage = function (
+  arr = state.bookmarks.entries,
+  RES_PER_PAGE = 9
+) {
+  state.bookmarks.page = 1;
+  state.bookmarks.page += getNewPageNumber(page);
+  const page = state.bookmarks.entries.page;
+
+  state.bookmarks.context = 'bookmark';
+  return getPage(state.bookmarks.page, arr, RES_PER_PAGE);
+};
+
+// const init = function () {
+//   state.bookmarks.entries = localStorage.getItem('bookmarks');
+//   if (state.bookmarks.entries)
+//     state.bookmarks = JSON.parse(state.bookmarks.entries);
+// };
+// init();
+
+const deleteBookmark = function (id) {
+  const index = state.bookmarks.entries.findIndex(el => el.id === id);
+  state.bookmarks.entries.splice(index, 1);
 };

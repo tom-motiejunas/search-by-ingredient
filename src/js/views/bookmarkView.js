@@ -1,20 +1,12 @@
 import View from './View.js';
 
-class foodsView extends View {
+class bookmarkView extends View {
   _parentElement = document.querySelector('.grid');
   _UIbtn = document.querySelector('.fa');
   _overlay = document.querySelector('.querry-box');
   _content = document.querySelector('.search');
   _errorMessage = 'We could not find any recipies with that ingredient';
   _message = '';
-
-  addHandlerClick(handler) {
-    this._parentElement.addEventListener('click', function (e) {
-      if (!(e.target.className === 'small-imgs food')) return;
-      const foodID = e.target.closest('.item').id;
-      handler(foodID);
-    });
-  }
 
   openWindow() {
     this._overlay.classList.remove('hidden');
@@ -31,7 +23,7 @@ class foodsView extends View {
           recipe.strMeal = `${recipe.strMeal.slice(0, 21)}...`;
         }
         return `
-        <i class="item" id="${recipe.idMeal}">
+        <i class="item" id="${recipe.id}">
         <img src="${recipe.strMealThumb}" class="small-imgs food"/>
         <h6>${recipe.strMeal}</h6>
         </i>`;
@@ -40,5 +32,5 @@ class foodsView extends View {
   }
 }
 
-export default new foodsView();
+export default new bookmarkView();
 //insertNewHTML(tableElements, markup);

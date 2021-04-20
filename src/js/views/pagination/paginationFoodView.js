@@ -17,8 +17,8 @@ class PaginationView extends View {
     let curPage, numPages, header;
     if (this._data.context === 'food') {
       header = `<span class="text">
-                  <h2 class="header-text">Search Results</h2>
-                  </span>`;
+      <h2 class="header-text">Search Results</h2>
+      </span>`;
       curPage = this._data.page;
       numPages = Math.ceil(
         this._data.results.meals.length / this._data.resultsPerPage
@@ -26,8 +26,8 @@ class PaginationView extends View {
     }
     if (this._data.context === 'categ') {
       header = `<span class="text">
-      <h2 class="header-text">Categories</h2>
-      </span>`;
+        <h2 class="header-text">Categories</h2>
+        </span>`;
       curPage = this._data.page;
       numPages = Math.ceil(
         this._data.results.length / this._data.resultsPerPage
@@ -35,12 +35,22 @@ class PaginationView extends View {
     }
     if (this._data.context === 'luck') {
       header = `<span class="text">
-      <h2 class="header-text">Lucky Search</h2>
-      </span>`;
+          <h2 class="header-text">Lucky Search</h2>
+          </span>`;
       curPage = this._data.page;
       numPages = Math.ceil(
         this._data.results.meals.length / this._data.resultsPerPage
       );
+    }
+    if (this._data.context === 'bookmark') {
+      header = `<span class="text">
+      <h2 class="header-text">Bookmarks</h2>
+      </span>`;
+      curPage = this._data.page;
+      numPages = Math.ceil(
+        this._data.entries.length / this._data.resultsPerPage
+      );
+      numPages = numPages ? numPages : 1;
     }
     const rendNextButton = function () {
       return `<i class="fa fa-arrow-right" aria-hidden="true"></i>`;
