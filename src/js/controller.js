@@ -41,10 +41,10 @@ const controlFoodPagination = function (goToPage) {
     paginationFoodView.render(model.state.search);
   }
   if (model.state.search.context === 'bookmarks') {
-    // 1) Render New Results
-    bookmarkView.render(model.getSearchResultsPage(goToPage));
-    // 2) Render New Pagination Buttons
-    paginationFoodView.render(model.bookmarks);
+    // 1) Render Results
+    bookmarkView.render(model.getBookmarkPage(goToPage));
+    // 2) Render Buttons
+    paginationFoodView.render(model.state.bookmarks);
   }
 };
 
@@ -162,12 +162,14 @@ const controlNavigation = async function (navStr) {
       paginationFoodView.render(model.state.search);
       break;
     case 'bookmark':
+      // 1) Setting page to 1 when clicked on bookmark button
+      model.state.bookmarks.page = 1;
+      // 2) Hiding ingredientView window (if there is)
       ingredientView.hideWindow();
-      // 4) Render Results
+      // 3) Render Results
       bookmarkView.render(model.getBookmarkPage());
-      // 5) Render Buttons
+      // 4) Render Buttons
       paginationFoodView.render(model.state.bookmarks);
-      // console.log(model.state.search.results);
       break;
     case 'about':
       break;
@@ -185,16 +187,6 @@ const controlCategories = async function (category) {
   foodsView.render(model.getSearchResultsPage());
   // 4) Render Buttons
   paginationFoodView.render(model.state.search);
-};
-
-const controlBookmarks = async function () {
-  // 3) Hide Ingredient View (if there is)
-  ingredientView.hideWindow();
-  // 4) Render Results
-  bookmarkView.render(model.getBookmarkPage());
-  // 5) Render Buttons
-  paginationFoodView.render(model.bookmarks.entries);
-  // console.log(model.state.search.results);
 };
 
 const init = function () {

@@ -16,7 +16,7 @@ export const state = {
     resultsPerPage: 6,
     isBookmarked: false,
   },
-  bookmarks: { entries: [], resultsPerPage: 9 },
+  bookmarks: { entries: [], resultsPerPage: 9, page: 1 },
 };
 
 export const apiCall = async function (url) {
@@ -165,24 +165,19 @@ export const toggleBookmark = function (recipe) {
   state.ingredient.isBookmarked = true;
 };
 
-export const getBookmarkPage = function (
-  arr = state.bookmarks.entries,
-  RES_PER_PAGE = 9
-) {
-  state.bookmarks.page = 1;
-  state.bookmarks.page += getNewPageNumber(page);
-  const page = state.bookmarks.entries.page;
-
+export const getBookmarkPage = function (goToPage, RES_PER_PAGE = 9) {
+  state.bookmarks.page += getNewPageNumber(goToPage);
+  const page = state.bookmarks.page;
+  state.search.context = 'bookmarks';
   state.bookmarks.context = 'bookmark';
-  return getPage(state.bookmarks.page, arr, RES_PER_PAGE);
+  return getPage(state.bookmarks.page, state.bookmarks.entries, RES_PER_PAGE);
 };
 
-// const init = function () {
-//   state.bookmarks.entries = localStorage.getItem('bookmarks');
-//   if (state.bookmarks.entries)
-//     state.bookmarks = JSON.parse(state.bookmarks.entries);
-// };
-// init();
+const init = function () {
+  const storage = localStorage.getItem('bookmarks');
+  if (storage) state.bookmarks.entries = JSON.parse(storage);
+};
+init();
 
 const deleteBookmark = function (id) {
   const index = state.bookmarks.entries.findIndex(el => el.id === id);

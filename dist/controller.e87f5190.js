@@ -902,7 +902,8 @@ var state = {
   },
   bookmarks: {
     entries: [],
-    resultsPerPage: 9
+    resultsPerPage: 9,
+    page: 1
   }
 };
 exports.state = state;
@@ -1253,23 +1254,23 @@ var toggleBookmark = function toggleBookmark(recipe) {
 
 exports.toggleBookmark = toggleBookmark;
 
-var getBookmarkPage = function getBookmarkPage() {
-  var arr = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : state.bookmarks.entries;
+var getBookmarkPage = function getBookmarkPage(goToPage) {
   var RES_PER_PAGE = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : 9;
-  state.bookmarks.page = 1;
-  state.bookmarks.page += getNewPageNumber(page);
-  var page = state.bookmarks.entries.page;
+  state.bookmarks.page += getNewPageNumber(goToPage);
+  var page = state.bookmarks.page;
+  state.search.context = 'bookmarks';
   state.bookmarks.context = 'bookmark';
-  return getPage(state.bookmarks.page, arr, RES_PER_PAGE);
-}; // const init = function () {
-//   state.bookmarks.entries = localStorage.getItem('bookmarks');
-//   if (state.bookmarks.entries)
-//     state.bookmarks = JSON.parse(state.bookmarks.entries);
-// };
-// init();
-
+  return getPage(state.bookmarks.page, state.bookmarks.entries, RES_PER_PAGE);
+};
 
 exports.getBookmarkPage = getBookmarkPage;
+
+var init = function init() {
+  var storage = localStorage.getItem('bookmarks');
+  if (storage) state.bookmarks.entries = JSON.parse(storage);
+};
+
+init();
 
 var deleteBookmark = function deleteBookmark(id) {
   var index = state.bookmarks.entries.findIndex(function (el) {
@@ -2223,11 +2224,11 @@ var controlFoodPagination = function controlFoodPagination(goToPage) {
   }
 
   if (model.state.search.context === 'bookmarks') {
-    // 1) Render New Results
-    _bookmarkView.default.render(model.getSearchResultsPage(goToPage)); // 2) Render New Pagination Buttons
+    // 1) Render Results
+    _bookmarkView.default.render(model.getBookmarkPage(goToPage)); // 2) Render Buttons
 
 
-    _paginationFoodView.default.render(model.bookmarks);
+    _paginationFoodView.default.render(model.state.bookmarks);
   }
 };
 
@@ -2344,7 +2345,7 @@ var controlNavigation = /*#__PURE__*/function () {
         switch (_context3.prev = _context3.next) {
           case 0:
             _context3.t0 = navStr;
-            _context3.next = _context3.t0 === 'categ' ? 3 : _context3.t0 === 'luck' ? 9 : _context3.t0 === 'bookmark' ? 15 : _context3.t0 === 'about' ? 19 : 20;
+            _context3.next = _context3.t0 === 'categ' ? 3 : _context3.t0 === 'luck' ? 9 : _context3.t0 === 'bookmark' ? 15 : _context3.t0 === 'about' ? 20 : 21;
             break;
 
           case 3:
@@ -2358,7 +2359,7 @@ var controlNavigation = /*#__PURE__*/function () {
 
             _paginationFoodView.default.render(model.state.search);
 
-            return _context3.abrupt("break", 21);
+            return _context3.abrupt("break", 22);
 
           case 9:
             _context3.next = 11;
@@ -2374,27 +2375,29 @@ var controlNavigation = /*#__PURE__*/function () {
 
             _paginationFoodView.default.render(model.state.search);
 
-            return _context3.abrupt("break", 21);
+            return _context3.abrupt("break", 22);
 
           case 15:
-            _ingredientView.default.hideWindow(); // 4) Render Results
+            // 1) Setting page to 1 when clicked on bookmark button
+            model.state.bookmarks.page = 1; // 2) Hiding ingredientView window (if there is)
+
+            _ingredientView.default.hideWindow(); // 3) Render Results
 
 
-            _bookmarkView.default.render(model.getBookmarkPage()); // 5) Render Buttons
+            _bookmarkView.default.render(model.getBookmarkPage()); // 4) Render Buttons
 
 
-            _paginationFoodView.default.render(model.state.bookmarks); // console.log(model.state.search.results);
+            _paginationFoodView.default.render(model.state.bookmarks);
 
-
-            return _context3.abrupt("break", 21);
-
-          case 19:
-            return _context3.abrupt("break", 21);
+            return _context3.abrupt("break", 22);
 
           case 20:
-            console.error('Unknown nav');
+            return _context3.abrupt("break", 22);
 
           case 21:
+            console.error('Unknown nav');
+
+          case 22:
           case "end":
             return _context3.stop();
         }
@@ -2436,35 +2439,6 @@ var controlCategories = /*#__PURE__*/function () {
 
   return function controlCategories(_x3) {
     return _ref4.apply(this, arguments);
-  };
-}();
-
-var controlBookmarks = /*#__PURE__*/function () {
-  var _ref5 = _asyncToGenerator( /*#__PURE__*/regeneratorRuntime.mark(function _callee5() {
-    return regeneratorRuntime.wrap(function _callee5$(_context5) {
-      while (1) {
-        switch (_context5.prev = _context5.next) {
-          case 0:
-            // 3) Hide Ingredient View (if there is)
-            _ingredientView.default.hideWindow(); // 4) Render Results
-
-
-            _bookmarkView.default.render(model.getBookmarkPage()); // 5) Render Buttons
-
-
-            _paginationFoodView.default.render(model.bookmarks.entries); // console.log(model.state.search.results);
-
-
-          case 3:
-          case "end":
-            return _context5.stop();
-        }
-      }
-    }, _callee5);
-  }));
-
-  return function controlBookmarks() {
-    return _ref5.apply(this, arguments);
   };
 }();
 
@@ -2513,7 +2487,7 @@ var parent = module.bundle.parent;
 if ((!parent || !parent.isParcelRequire) && typeof WebSocket !== 'undefined') {
   var hostname = "" || location.hostname;
   var protocol = location.protocol === 'https:' ? 'wss' : 'ws';
-  var ws = new WebSocket(protocol + '://' + hostname + ':' + "64882" + '/');
+  var ws = new WebSocket(protocol + '://' + hostname + ':' + "50326" + '/');
 
   ws.onmessage = function (event) {
     checkedAssets = {};
