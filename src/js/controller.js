@@ -8,6 +8,7 @@ import paginationIngView from './views/pagination/paginationIngredientView.js';
 import categoriesView from './views/categoriesView.js';
 import { async } from 'regenerator-runtime';
 import bookmarkView from './views/bookmarkView.js';
+import aboutView from './views/aboutView.js';
 
 const controlSearch = async function () {
   // 1) Getting search querry
@@ -172,6 +173,11 @@ const controlNavigation = async function (navStr) {
       paginationFoodView.render(model.state.bookmarks);
       break;
     case 'about':
+      ingredientView.hideWindow();
+      foodsView.hideWindow();
+      model.state.search.context = 'about';
+      aboutView.render();
+      paginationFoodView.render(model.state.search);
       break;
     default:
       console.error('Unknown nav');

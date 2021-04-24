@@ -5,14 +5,12 @@ class foodsView extends View {
   _UIbtn = document.querySelector('.fa');
   _overlay = document.querySelector('.querry-box');
   _content = document.querySelector('.search');
-  _errorMessage = 'We could not find any recipies with that ingredient';
   _message = '';
 
   addHandlerClick(handler) {
     this._parentElement.addEventListener('click', function (e) {
-      if (!(e.target.className === 'small-imgs food')) return;
-      const foodID = e.target.closest('.item').id;
-      handler(foodID);
+      if (!(e.target.className === 'small-imgs-about')) return;
+      console.log('clicked');
     });
   }
 
@@ -25,18 +23,15 @@ class foodsView extends View {
   }
   _generateMarkup() {
     this.openWindow();
-    return this._data
-      .map(recipe => {
-        if (recipe.strMeal.length > 24) {
-          recipe.strMeal = `${recipe.strMeal.slice(0, 21)}...`;
-        }
-        return `
-        <i class="item" id="${recipe.idMeal}">
-        <img src="${recipe.strMealThumb}" class="small-imgs food"/>
-        <h6>${recipe.strMeal}</h6>
-        </i>`;
-      })
-      .join('');
+    return `
+    <i class="item">
+    <img src="http://pngimg.com/uploads/github/github_PNG40.png" class="small-imgs-about" />
+    <h4 class="center">GitHub</h4>
+    </i>
+    <i class="item">
+    <img src="https://image.flaticon.com/icons/png/512/61/61109.png" class="small-imgs-about" />
+    <h4 class="center">Linkedin</h4>
+    </i>`;
   }
 }
 

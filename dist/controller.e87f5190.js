@@ -1431,8 +1431,7 @@ var foodsView = /*#__PURE__*/function (_View) {
   return foodsView;
 }(_View2.default);
 
-var _default = new foodsView(); //insertNewHTML(tableElements, markup);
-
+var _default = new foodsView();
 
 exports.default = _default;
 },{"./View.js":"src/js/views/View.js"}],"src/js/views/ingredientView.js":[function(require,module,exports) {
@@ -1731,6 +1730,10 @@ var PaginationView = /*#__PURE__*/function (_View) {
         curPage = this._data.page;
         numPages = Math.ceil(this._data.entries.length / this._data.resultsPerPage);
         numPages = numPages ? numPages : 1;
+      }
+
+      if (this._data.context === 'about') {
+        return "<span class=\"text\">\n      <h2 class=\"header-text\">About</h2>\n      </span>";
       }
 
       var rendNextButton = function rendNextButton() {
@@ -2136,6 +2139,105 @@ var _default = new bookmarkView(); //insertNewHTML(tableElements, markup);
 
 
 exports.default = _default;
+},{"./View.js":"src/js/views/View.js"}],"src/js/views/aboutView.js":[function(require,module,exports) {
+"use strict";
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+exports.default = void 0;
+
+var _View2 = _interopRequireDefault(require("./View.js"));
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+function _typeof(obj) { "@babel/helpers - typeof"; if (typeof Symbol === "function" && typeof Symbol.iterator === "symbol") { _typeof = function _typeof(obj) { return typeof obj; }; } else { _typeof = function _typeof(obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; }; } return _typeof(obj); }
+
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+function _defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } }
+
+function _createClass(Constructor, protoProps, staticProps) { if (protoProps) _defineProperties(Constructor.prototype, protoProps); if (staticProps) _defineProperties(Constructor, staticProps); return Constructor; }
+
+function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function"); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, writable: true, configurable: true } }); if (superClass) _setPrototypeOf(subClass, superClass); }
+
+function _setPrototypeOf(o, p) { _setPrototypeOf = Object.setPrototypeOf || function _setPrototypeOf(o, p) { o.__proto__ = p; return o; }; return _setPrototypeOf(o, p); }
+
+function _createSuper(Derived) { var hasNativeReflectConstruct = _isNativeReflectConstruct(); return function _createSuperInternal() { var Super = _getPrototypeOf(Derived), result; if (hasNativeReflectConstruct) { var NewTarget = _getPrototypeOf(this).constructor; result = Reflect.construct(Super, arguments, NewTarget); } else { result = Super.apply(this, arguments); } return _possibleConstructorReturn(this, result); }; }
+
+function _possibleConstructorReturn(self, call) { if (call && (_typeof(call) === "object" || typeof call === "function")) { return call; } return _assertThisInitialized(self); }
+
+function _assertThisInitialized(self) { if (self === void 0) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return self; }
+
+function _isNativeReflectConstruct() { if (typeof Reflect === "undefined" || !Reflect.construct) return false; if (Reflect.construct.sham) return false; if (typeof Proxy === "function") return true; try { Boolean.prototype.valueOf.call(Reflect.construct(Boolean, [], function () {})); return true; } catch (e) { return false; } }
+
+function _getPrototypeOf(o) { _getPrototypeOf = Object.setPrototypeOf ? Object.getPrototypeOf : function _getPrototypeOf(o) { return o.__proto__ || Object.getPrototypeOf(o); }; return _getPrototypeOf(o); }
+
+function _defineProperty(obj, key, value) { if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); } else { obj[key] = value; } return obj; }
+
+var foodsView = /*#__PURE__*/function (_View) {
+  _inherits(foodsView, _View);
+
+  var _super = _createSuper(foodsView);
+
+  function foodsView() {
+    var _this;
+
+    _classCallCheck(this, foodsView);
+
+    for (var _len = arguments.length, args = new Array(_len), _key = 0; _key < _len; _key++) {
+      args[_key] = arguments[_key];
+    }
+
+    _this = _super.call.apply(_super, [this].concat(args));
+
+    _defineProperty(_assertThisInitialized(_this), "_parentElement", document.querySelector('.grid'));
+
+    _defineProperty(_assertThisInitialized(_this), "_UIbtn", document.querySelector('.fa'));
+
+    _defineProperty(_assertThisInitialized(_this), "_overlay", document.querySelector('.querry-box'));
+
+    _defineProperty(_assertThisInitialized(_this), "_content", document.querySelector('.search'));
+
+    _defineProperty(_assertThisInitialized(_this), "_message", '');
+
+    return _this;
+  }
+
+  _createClass(foodsView, [{
+    key: "addHandlerClick",
+    value: function addHandlerClick(handler) {
+      this._parentElement.addEventListener('click', function (e) {
+        if (!(e.target.className === 'small-imgs-about')) return;
+        console.log('clicked');
+      });
+    }
+  }, {
+    key: "openWindow",
+    value: function openWindow() {
+      this._overlay.classList.remove('hidden');
+
+      this._content.classList.remove('hidden');
+    }
+  }, {
+    key: "hideWindow",
+    value: function hideWindow() {
+      this._content.classList.add('hidden');
+    }
+  }, {
+    key: "_generateMarkup",
+    value: function _generateMarkup() {
+      this.openWindow();
+      return "\n    <i class=\"item\">\n    <img src=\"http://pngimg.com/uploads/github/github_PNG40.png\" class=\"small-imgs-about\" />\n    <h4 class=\"center\">GitHub</h4>\n    </i>\n    <i class=\"item\">\n    <img src=\"https://image.flaticon.com/icons/png/512/61/61109.png\" class=\"small-imgs-about\" />\n    <h4 class=\"center\">Linkedin</h4>\n    </i>";
+    }
+  }]);
+
+  return foodsView;
+}(_View2.default);
+
+var _default = new foodsView();
+
+exports.default = _default;
 },{"./View.js":"src/js/views/View.js"}],"src/js/controller.js":[function(require,module,exports) {
 "use strict";
 
@@ -2158,6 +2260,8 @@ var _categoriesView = _interopRequireDefault(require("./views/categoriesView.js"
 var _regeneratorRuntime = require("regenerator-runtime");
 
 var _bookmarkView = _interopRequireDefault(require("./views/bookmarkView.js"));
+
+var _aboutView = _interopRequireDefault(require("./views/aboutView.js"));
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
@@ -2345,7 +2449,7 @@ var controlNavigation = /*#__PURE__*/function () {
         switch (_context3.prev = _context3.next) {
           case 0:
             _context3.t0 = navStr;
-            _context3.next = _context3.t0 === 'categ' ? 3 : _context3.t0 === 'luck' ? 9 : _context3.t0 === 'bookmark' ? 15 : _context3.t0 === 'about' ? 20 : 21;
+            _context3.next = _context3.t0 === 'categ' ? 3 : _context3.t0 === 'luck' ? 9 : _context3.t0 === 'bookmark' ? 15 : _context3.t0 === 'about' ? 20 : 26;
             break;
 
           case 3:
@@ -2359,7 +2463,7 @@ var controlNavigation = /*#__PURE__*/function () {
 
             _paginationFoodView.default.render(model.state.search);
 
-            return _context3.abrupt("break", 22);
+            return _context3.abrupt("break", 27);
 
           case 9:
             _context3.next = 11;
@@ -2375,7 +2479,7 @@ var controlNavigation = /*#__PURE__*/function () {
 
             _paginationFoodView.default.render(model.state.search);
 
-            return _context3.abrupt("break", 22);
+            return _context3.abrupt("break", 27);
 
           case 15:
             // 1) Setting page to 1 when clicked on bookmark button
@@ -2389,15 +2493,25 @@ var controlNavigation = /*#__PURE__*/function () {
 
             _paginationFoodView.default.render(model.state.bookmarks);
 
-            return _context3.abrupt("break", 22);
+            return _context3.abrupt("break", 27);
 
           case 20:
-            return _context3.abrupt("break", 22);
+            _ingredientView.default.hideWindow();
 
-          case 21:
+            _foodsView.default.hideWindow();
+
+            model.state.search.context = 'about';
+
+            _aboutView.default.render();
+
+            _paginationFoodView.default.render(model.state.search);
+
+            return _context3.abrupt("break", 27);
+
+          case 26:
             console.error('Unknown nav');
 
-          case 22:
+          case 27:
           case "end":
             return _context3.stop();
         }
@@ -2459,7 +2573,7 @@ var init = function init() {
 };
 
 init();
-},{"./model.js":"src/js/model.js","./views/foodsView.js":"src/js/views/foodsView.js","./views/ingredientView.js":"src/js/views/ingredientView.js","./views/navView.js":"src/js/views/navView.js","./views//pagination/paginationFoodView.js":"src/js/views/pagination/paginationFoodView.js","./views/searchView.js":"src/js/views/searchView.js","./views/pagination/paginationIngredientView.js":"src/js/views/pagination/paginationIngredientView.js","./views/categoriesView.js":"src/js/views/categoriesView.js","regenerator-runtime":"node_modules/regenerator-runtime/runtime.js","./views/bookmarkView.js":"src/js/views/bookmarkView.js"}],"node_modules/parcel-bundler/src/builtins/hmr-runtime.js":[function(require,module,exports) {
+},{"./model.js":"src/js/model.js","./views/foodsView.js":"src/js/views/foodsView.js","./views/ingredientView.js":"src/js/views/ingredientView.js","./views/navView.js":"src/js/views/navView.js","./views//pagination/paginationFoodView.js":"src/js/views/pagination/paginationFoodView.js","./views/searchView.js":"src/js/views/searchView.js","./views/pagination/paginationIngredientView.js":"src/js/views/pagination/paginationIngredientView.js","./views/categoriesView.js":"src/js/views/categoriesView.js","regenerator-runtime":"node_modules/regenerator-runtime/runtime.js","./views/bookmarkView.js":"src/js/views/bookmarkView.js","./views/aboutView.js":"src/js/views/aboutView.js"}],"node_modules/parcel-bundler/src/builtins/hmr-runtime.js":[function(require,module,exports) {
 var global = arguments[3];
 var OVERLAY_ID = '__parcel__error__overlay__';
 var OldModule = module.bundle.Module;
@@ -2487,7 +2601,7 @@ var parent = module.bundle.parent;
 if ((!parent || !parent.isParcelRequire) && typeof WebSocket !== 'undefined') {
   var hostname = "" || location.hostname;
   var protocol = location.protocol === 'https:' ? 'wss' : 'ws';
-  var ws = new WebSocket(protocol + '://' + hostname + ':' + "50326" + '/');
+  var ws = new WebSocket(protocol + '://' + hostname + ':' + "52471" + '/');
 
   ws.onmessage = function (event) {
     checkedAssets = {};

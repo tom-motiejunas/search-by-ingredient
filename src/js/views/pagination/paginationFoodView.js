@@ -52,6 +52,11 @@ class PaginationView extends View {
       );
       numPages = numPages ? numPages : 1;
     }
+    if (this._data.context === 'about') {
+      return `<span class="text">
+      <h2 class="header-text">About</h2>
+      </span>`;
+    }
     const rendNextButton = function () {
       return `<i class="fa fa-arrow-right" aria-hidden="true"></i>`;
     };

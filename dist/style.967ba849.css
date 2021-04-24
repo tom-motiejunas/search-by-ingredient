@@ -190,7 +190,7 @@ form.search-bar button {
   height: 10rem;
   width: 10rem;
   float: right;
-  border-style: dotted;
+  border-style: solid;
   margin-right: 1rem;
   margin-top: 1rem;
 }
@@ -200,6 +200,10 @@ form.search-bar button {
 .small-imgs {
   width: 10rem;
   height: 6rem;
+}
+.small-imgs-about {
+  width: 10rem;
+  height: 10rem;
 }
 .itemGrid {
   background-color: var(--color-light--2);
