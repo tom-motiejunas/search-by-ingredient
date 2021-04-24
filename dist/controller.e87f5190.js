@@ -2208,8 +2208,8 @@ var foodsView = /*#__PURE__*/function (_View) {
     key: "addHandlerClick",
     value: function addHandlerClick(handler) {
       this._parentElement.addEventListener('click', function (e) {
-        if (!(e.target.className === 'small-imgs-about')) return;
-        console.log('clicked');
+        if (!e.target.className.includes('small-imgs-about')) return;
+        handler(e.target.classList[1]);
       });
     }
   }, {
@@ -2228,7 +2228,7 @@ var foodsView = /*#__PURE__*/function (_View) {
     key: "_generateMarkup",
     value: function _generateMarkup() {
       this.openWindow();
-      return "\n    <i class=\"item\">\n    <img src=\"http://pngimg.com/uploads/github/github_PNG40.png\" class=\"small-imgs-about\" />\n    <h4 class=\"center\">GitHub</h4>\n    </i>\n    <i class=\"item\">\n    <img src=\"https://image.flaticon.com/icons/png/512/61/61109.png\" class=\"small-imgs-about\" />\n    <h4 class=\"center\">Linkedin</h4>\n    </i>";
+      return "\n    <i class=\"item\">\n    <img src=\"http://pngimg.com/uploads/github/github_PNG40.png\" class=\"small-imgs-about github\"/>\n    <h4 class=\"center\">GitHub</h4>\n    </i>\n    <i class=\"item\">\n    <img src=\"https://image.flaticon.com/icons/png/512/61/61109.png\" class=\"small-imgs-about linkedin\" />\n    <h4 class=\"center\">Linkedin</h4>\n    </i>";
     }
   }]);
 
@@ -2556,6 +2556,18 @@ var controlCategories = /*#__PURE__*/function () {
   };
 }();
 
+var controlAbout = function controlAbout(site) {
+  if (site === 'github') {
+    var website = 'https://github.com/tom-motiejunas/tom-motiejunas';
+    window.open(website, 'Github_WindowName');
+  }
+
+  if (site === 'linkedin') {
+    var _website = 'https://www.linkedin.com/in/tomas-motiej%C5%ABnas-5974861b9/';
+    window.open(_website, 'Linkedin_WindowName');
+  }
+};
+
 var init = function init() {
   _searchView.default.addHandlerSearch(controlSearch);
 
@@ -2570,6 +2582,8 @@ var init = function init() {
   _categoriesView.default.addHandlerClick(controlCategories);
 
   _ingredientView.default.addHandlerClick(controlIngredient);
+
+  _aboutView.default.addHandlerClick(controlAbout);
 };
 
 init();

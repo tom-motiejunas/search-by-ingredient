@@ -9,8 +9,8 @@ class foodsView extends View {
 
   addHandlerClick(handler) {
     this._parentElement.addEventListener('click', function (e) {
-      if (!(e.target.className === 'small-imgs-about')) return;
-      console.log('clicked');
+      if (!e.target.className.includes('small-imgs-about')) return;
+      handler(e.target.classList[1]);
     });
   }
 
@@ -25,11 +25,11 @@ class foodsView extends View {
     this.openWindow();
     return `
     <i class="item">
-    <img src="http://pngimg.com/uploads/github/github_PNG40.png" class="small-imgs-about" />
+    <img src="http://pngimg.com/uploads/github/github_PNG40.png" class="small-imgs-about github"/>
     <h4 class="center">GitHub</h4>
     </i>
     <i class="item">
-    <img src="https://image.flaticon.com/icons/png/512/61/61109.png" class="small-imgs-about" />
+    <img src="https://image.flaticon.com/icons/png/512/61/61109.png" class="small-imgs-about linkedin" />
     <h4 class="center">Linkedin</h4>
     </i>`;
   }

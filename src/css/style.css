@@ -64,7 +64,6 @@ h6 {
 .green {
   color: var(--color-brand--2);
 }
-
 .nav-bar {
   display: inline-block;
   position: relative;
@@ -167,8 +166,9 @@ form.search-bar button {
   position: relative;
   width: 35.2rem;
   height: 35rem;
-  right: -70rem;
+  float: right;
   bottom: -8.6rem;
+  margin-right: 2rem;
   animation-name: move-up;
   animation-duration: 1s;
 }

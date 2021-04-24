@@ -195,6 +195,18 @@ const controlCategories = async function (category) {
   paginationFoodView.render(model.state.search);
 };
 
+const controlAbout = function (site) {
+  if (site === 'github') {
+    const website = 'https://github.com/tom-motiejunas/tom-motiejunas';
+    window.open(website, 'Github_WindowName');
+  }
+  if (site === 'linkedin') {
+    const website =
+      'https://www.linkedin.com/in/tomas-motiej%C5%ABnas-5974861b9/';
+    window.open(website, 'Linkedin_WindowName');
+  }
+};
+
 const init = function () {
   searchView.addHandlerSearch(controlSearch);
   paginationFoodView.addHandlerClick(controlFoodPagination);
@@ -203,5 +215,6 @@ const init = function () {
   navView.addHandlerClick(controlNavigation);
   categoriesView.addHandlerClick(controlCategories);
   ingredientView.addHandlerClick(controlIngredient);
+  aboutView.addHandlerClick(controlAbout);
 };
 init();
