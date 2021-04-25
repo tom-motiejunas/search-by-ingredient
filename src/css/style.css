@@ -12,6 +12,9 @@
   --color-light--2: #ececec;
   --color-light--3: rgb(214, 222, 224);
 }
+html {
+  overflow: hidden;
+}
 * {
   margin: 0;
   padding: 0;
@@ -37,6 +40,80 @@ h6 {
   height: auto;
   font-family: 'Courier New', Courier, monospace;
 }
+@media only screen and (min-width: 1280px) {
+  .nav-bar {
+    width: 48rem;
+    font-size: 18px;
+    margin-right: 1rem;
+  }
+  .greeter-text {
+    font-size: 20px;
+  }
+  .search-bar {
+    width: 40rem;
+    font-size: 25px;
+  }
+  .input-field {
+    width: 23rem;
+    font-size: 20px;
+  }
+  .querry-box {
+    width: 25rem;
+    height: 27rem;
+  }
+  .header {
+    height: 5.2rem;
+  }
+  .item {
+    height: 7rem;
+    width: 6.7rem;
+  }
+  .fa-arrow-right,
+  .fa-arrow-left {
+    bottom: -2.55rem;
+  }
+  .grid {
+    font-size: 17px;
+  }
+}
+@media only screen and (min-width: 1920px) {
+  .nav-bar {
+    width: 53rem;
+    font-size: 20px;
+  }
+  .greeter-text {
+    font-size: 25px;
+  }
+  .search-bar {
+    width: 40rem;
+    font-size: 15px;
+  }
+  .input-field {
+    width: 30rem;
+    font-size: 40px;
+  }
+  form.search-bar button {
+    top: -0.45rem;
+  }
+  .querry-box {
+    width: 35.2rem;
+    height: 35rem;
+  }
+  .header {
+    height: 8rem;
+  }
+  .item {
+    height: 10rem;
+    width: 10rem;
+  }
+  .fa-arrow-right,
+  .fa-arrow-left {
+    bottom: -5.2rem;
+  }
+  .grid {
+    font-size: 25px;
+  }
+}
 .nav-text:hover {
   color: var(--color-brand--4);
 }
@@ -53,7 +130,7 @@ h6 {
   height: 4rem;
   top: 22rem;
   left: 9rem;
-  font-size: 25px;
+
   padding-left: 1rem;
   color: var(--color-brand--1);
 }
@@ -65,13 +142,10 @@ h6 {
   color: var(--color-brand--2);
 }
 .nav-bar {
-  display: inline-block;
   position: relative;
   height: 3rem;
-  width: 53rem;
   top: 5.2rem;
-  right: -6rem;
-  font-size: 20px;
+  float: right;
   color: var(--color-light--2);
   vertical-align: top;
 }
@@ -83,18 +157,15 @@ h6 {
 .search-bar {
   display: block;
   position: relative;
-  width: 40rem;
   height: 4rem;
   top: 25rem;
   left: 10rem;
-  font-size: 25px;
   padding-left: 1rem;
   color: var(--color-brand--1);
 }
 .input-field {
   border: none;
   border-radius: 35px 0px 0px 35px;
-  font-size: 40px;
   outline: none;
 }
 form.search-bar button {
@@ -103,7 +174,6 @@ form.search-bar button {
   position: relative;
   width: 5rem;
   height: 4rem;
-  top: -0.45rem;
   left: -0.4rem;
   background: #fff;
   font-size: 20px;
@@ -113,8 +183,7 @@ form.search-bar button {
 }
 .header {
   position: relative;
-  width: 35rem;
-  height: 8rem;
+  width: 100%;
   font-size: 25px;
   border-style: solid;
   background-color: var(--color-brand--2);
@@ -125,10 +194,10 @@ form.search-bar button {
   grid-template-columns: 0fr 0fr 0fr;
   grid-template-rows: 0fr 0fr 0fr;
   position: relative;
-  bottom: 0.2rem;
+  bottom: 0.3rem;
   margin-top: 0.3rem;
-  width: 35.31rem;
-  font-size: 25px;
+  width: 100%;
+  height: 95%;
   background-color: var(--color-light--2);
 }
 .item {
@@ -142,7 +211,6 @@ form.search-bar button {
 }
 .fa-arrow-left {
   position: relative;
-  bottom: -5.2rem;
   margin-left: 0.5rem;
   font-size: 40px;
   float: left;
@@ -150,7 +218,6 @@ form.search-bar button {
 }
 .fa-arrow-right {
   position: relative;
-  bottom: -5.2rem;
   margin-right: 0.5rem;
   font-size: 40px;
   float: right;
@@ -163,11 +230,9 @@ form.search-bar button {
   right: 0.2rem;
 }
 .querry-box {
-  position: relative;
-  width: 35.2rem;
-  height: 35rem;
-  float: right;
-  bottom: -8.6rem;
+  position: absolute;
+  bottom: 5rem;
+  right: 3px;
   margin-right: 2rem;
   animation-name: move-up;
   animation-duration: 1s;
@@ -177,9 +242,8 @@ form.search-bar button {
   align-items: center;
   justify-content: center;
   position: absolute;
-  right: 8.5rem;
   height: 3.5rem;
-  width: 17rem;
+  width: 100%;
   bottom: 0rem;
 }
 .header-text {
@@ -187,8 +251,6 @@ form.search-bar button {
   height: 3rem;
 }
 .item {
-  height: 10rem;
-  width: 10rem;
   float: right;
   border-style: solid;
   margin-right: 1rem;
@@ -198,12 +260,12 @@ form.search-bar button {
   display: none;
 }
 .small-imgs {
-  width: 10rem;
-  height: 6rem;
+  width: 100%;
+  height: 60%;
 }
 .small-imgs-about {
-  width: 10rem;
-  height: 10rem;
+  width: 100%;
+  height: 100%;
 }
 .itemGrid {
   background-color: var(--color-light--2);
